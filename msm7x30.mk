@@ -116,7 +116,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	ro.opengles.version=131072 \
 	wifi.interface=wlan0 \
 	ro.bt.bdaddr_path=/sys/hwprops/btmac \
-	ro.hwro=1
+	ro.hwro=1 \
+	persist.sys.strictmode.visual=0 \
+	persist.sys.strictmode.disable=1
 
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
