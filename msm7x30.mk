@@ -126,7 +126,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
 	lpa.decode=false \
 	ro.hs_intmic.supported=1 \
-	audio.gapless.playback.disable=true
+	audio.gapless.playback.disable=true \
+	media.stagefright.use-awesome=true
 
 # Graphics properties
 PRODUCT_PROPERTY_OVERRIDES += \
