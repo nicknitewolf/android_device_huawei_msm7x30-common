@@ -118,7 +118,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	ro.bt.bdaddr_path=/sys/hwprops/btmac \
 	ro.hwro=1 \
 	persist.sys.strictmode.visual=0 \
-	persist.sys.strictmode.disable=1
+	persist.sys.strictmode.disable=1 \
+	ro.config.max_starting_bg=8
 
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
