@@ -1,0 +1,61 @@
+#
+# Copyright (C) 2014  Rudolf Tammekivi <rtammekivi@gmail.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# If the library is needed to be linked to some other binary, please use "-" in
+# front of the library.
+
+# RMT storage daemon
+system/bin/rmt_storage
+
+# RMT storage daemon for recovery (static linkage)
+recovery/root/sbin/rmt_storage
+
+# EGL firmware
+system/etc/firmware/a225p5_pm4.fw
+system/etc/firmware/a225_pfp.fw
+system/etc/firmware/a225_pm4.fw
+system/etc/firmware/leia_pfp_470.fw
+system/etc/firmware/leia_pm4_470.fw
+system/etc/firmware/yamato_pfp.fw
+system/etc/firmware/yamato_pm4.fw
+
+# VIDC 720P firmware
+system/etc/firmware/vidc_720p_command_control.fw
+system/etc/firmware/vidc_720p_h263_dec_mc.fw
+system/etc/firmware/vidc_720p_h264_dec_mc.fw
+system/etc/firmware/vidc_720p_h264_enc_mc.fw
+system/etc/firmware/vidc_720p_mp4_dec_mc.fw
+system/etc/firmware/vidc_720p_mp4_enc_mc.fw
+system/etc/firmware/vidc_720p_vc1_dec_mc.fw
+
+# EGL libraries
+system/vendor/lib/egl/eglsubAndroid.so
+system/vendor/lib/egl/libEGL_adreno.so
+system/vendor/lib/egl/libGLESv1_CM_adreno.so
+system/vendor/lib/egl/libGLESv2S3D_adreno.so
+system/vendor/lib/egl/libGLESv2_adreno.so
+system/vendor/lib/egl/libq3dtools_adreno.so
+system/vendor/lib/libadreno_utils.so
+system/vendor/lib/libc2d2_z180.so
+system/vendor/lib/libC2D2.so
+system/vendor/lib/libCB.so
+system/vendor/lib/libgsl.so
+system/vendor/lib/libOpenCL.so
+system/vendor/lib/libOpenVG.so
+system/vendor/lib/libsc-a2xx.so
+
+# OMX extensions
+system/lib/libOmxMp3Dec.so
