@@ -20,6 +20,10 @@
 # RMT storage daemon
 system/bin/rmt_storage
 
+# RMT oeminfo daemon
+system/bin/rmt_oeminfo
+system/lib/liboeminfo.so
+
 # RMT storage daemon for recovery (static linkage)
 recovery/root/sbin/rmt_storage
 

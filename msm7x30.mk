@@ -101,7 +101,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	ro.opengles.version=131072 \
 	persist.sys.usb.config=mtp \
 	wifi.interface=wlan0 \
-	ro.bt.bdaddr_path=/sys/hwprops/btmac
+	ro.bt.bdaddr_path=/sys/hwprops/btmac \
+	ro.hwro=1
 
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
