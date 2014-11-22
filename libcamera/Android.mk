@@ -25,8 +25,8 @@ LOCAL_CFLAGS += -DNUM_PREVIEW_BUFFERS=4
 LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
 LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
 LOCAL_C_INCLUDES += \
-    hardware/qcom/display-$(TARGET_QCOM_DISPLAY_VARIANT)/libgralloc \
-    hardware/qcom/media-$(TARGET_QCOM_MEDIA_VARIANT)/libstagefrighthw
+    $(call project-path-for,qcom-display)/libgralloc \
+    $(call project-path-for,qcom-media)/libstagefrighthw
 
 LOCAL_SHARED_LIBRARIES := \
     libcamera_client \
