@@ -82,6 +82,7 @@ PRODUCT_PACKAGES += \
 
 # Common packages
 PRODUCT_PACKAGES += \
+	hostapd \
 	hwprops \
 	fstab.qcom \
 	init.qcom.rc \
@@ -89,6 +90,8 @@ PRODUCT_PACKAGES += \
 	ueventd.qcom.rc \
 	audio_policy.conf \
 	media_codecs.xml \
+	wpa_supplicant \
+	wpa_supplicant.conf \
 	wpa_supplicant_overlay.conf
 
 # Common apps
