@@ -127,10 +127,12 @@ service cnd /system/bin/cnd
 service rmt_storage /system/bin/rmt_storage
     class core
     user root
+    group system
 
 service rmt_oeminfo /system/bin/rmt_oeminfo
     class core
     user root
+    group system
 
 # QMUX must be in multiple groups to support external process connections
 service qmuxd /system/bin/qmuxd
@@ -140,6 +142,7 @@ service qmuxd /system/bin/qmuxd
 
 service netmgrd /system/bin/netmgrd
     class main
+    group radio
 
 service p2p_supplicant /system/bin/wpa_supplicant \
     -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf \
