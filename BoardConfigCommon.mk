@@ -68,6 +68,7 @@ TARGET_USES_ION := true
 TARGET_USE_CUSTOM_LUN_FILE_PATH := /sys/devices/platform/msm_hsusb/gadget/lun%d/file
 TARGET_NO_INITLOGO := true
 TARGET_RELEASETOOLS_EXTENSIONS := device/huawei/msm7x30-common
+TARGET_NEEDS_NON_PIE_SUPPORT := true
 
 TARGET_GLOBAL_CFLAGS += -mfpu=neon -mfloat-abi=softfp
 TARGET_GLOBAL_CPPFLAGS += -mfpu=neon -mfloat-abi=softfp
