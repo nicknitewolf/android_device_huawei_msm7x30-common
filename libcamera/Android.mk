@@ -13,7 +13,8 @@ DLOPEN_LIBMMCAMERA := 1
 
 LOCAL_SRC_FILES := \
     QualcommCamera.cpp \
-    QualcommCameraHardware.cpp
+    QualcommCameraHardware.cpp \
+    QCameraParameters.cpp
 
 ifeq ($(TARGET_USES_ION),true)
     LOCAL_CFLAGS += -DUSE_ION

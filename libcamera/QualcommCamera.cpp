@@ -75,7 +75,7 @@ static camera_device_ops_t camera_ops = {
 typedef struct {
 	QualcommCameraHardware *hardware;
 	int camera_released;
-	CameraParameters parameters;
+	QCameraParameters parameters;
 	camera_notify_callback notify_cb;
 	camera_data_callback data_cb;
 	camera_data_timestamp_callback data_cb_timestamp;
@@ -365,7 +365,7 @@ int cancel_picture(struct camera_device * device)
 	return -1;
 }
 
-static CameraParameters g_param;
+static QCameraParameters g_param;
 static String8 g_str;
 
 int set_parameters(struct camera_device * device, const char *parms)
@@ -391,7 +391,7 @@ char *get_parameters(struct camera_device * device)
 {
 	ALOGV("%s", __FUNCTION__);
 
-	CameraParameters param;
+	QCameraParameters param;
 	QualcommCameraHardware *hardware = qcamera_get_hardware(device);
 	if (hardware) {
 		g_param = hardware->getParameters();
