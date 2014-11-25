@@ -2574,7 +2574,7 @@ void QualcommCameraHardware::runHFRThread(void *data)
                         MSM_PMEM_THUMBNAIL,
                         false, false);
                     if (munmap(mThumbnailMapped[cnt],handle->size ) == -1) {
-                      ALOGE("StopPreview : Error un-mmapping the thumbnail buffer %p", index);
+                      ALOGE("StopPreview : Error un-mmapping the thumbnail buffer %d", handle->fd);
                     }
                     mThumbnailMapped[cnt] = NULL;
                 }
@@ -3548,7 +3548,7 @@ void QualcommCameraHardware::deinitRaw()
                         MSM_PMEM_THUMBNAIL,
                         false, false);
                      if (munmap(mThumbnailMapped[cnt],handle->size ) == -1) {
-                       ALOGE("deinitraw : Error un-mmapping the thumbnail buffer %p", index);
+                       ALOGE("deinitraw : Error un-mmapping the thumbnail buffer %d", handle->fd);
                      }
                      mThumbnailBuffer[cnt] = NULL;
                      mThumbnailMapped[cnt] = NULL;
@@ -4150,7 +4150,7 @@ void QualcommCameraHardware::stopPreview()
                         MSM_PMEM_THUMBNAIL,
                         false, false);
                     if (munmap(mThumbnailMapped[cnt],handle->size ) == -1) {
-                        ALOGE("StopPreview : Error un-mmapping the thumbnail buffer %p", index);
+                        ALOGE("StopPreview : Error un-mmapping the thumbnail buffer %d", handle->fd);
                     }
                     mThumbnailMapped[cnt] = NULL;
                 }
