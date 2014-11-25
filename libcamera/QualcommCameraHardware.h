@@ -28,7 +28,7 @@
 
 extern "C" {
 #ifdef USE_ION
-#include <linux/ion.h>
+#include <linux/msm_ion.h>
 #else
 #include <linux/android_pmem.h>
 #endif
