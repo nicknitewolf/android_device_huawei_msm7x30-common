@@ -73,6 +73,7 @@ PRODUCT_PACKAGES += \
 	audio.a2dp.default \
 	audio.primary.msm7x30 \
 	audio.r_submix.default \
+	audio.usb.default \
 	camera.msm7x30 \
 	copybit.msm7x30 \
 	gralloc.msm7x30 \
