@@ -105,12 +105,15 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/recovery/init.recovery.qcom.rc:root/init.recovery.qcom.rc
 
+# Common default properties
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
+	persist.sys.usb.config=mtp
+
 # Common properties
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.sf.lcd_density=240 \
 	ro.config.low_ram=true \
 	ro.opengles.version=131072 \
-	persist.sys.usb.config=mtp \
 	wifi.interface=wlan0 \
 	ro.bt.bdaddr_path=/sys/hwprops/btmac \
 	ro.hwro=1
