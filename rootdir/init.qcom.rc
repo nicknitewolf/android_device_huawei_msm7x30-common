@@ -121,10 +121,6 @@ on post-fs-data
 on property:init.svc.wpa_supplicant=stopped
     stop dhcpcd
 
-service cnd /system/bin/cnd
-    class late_start
-    socket cnd stream 666 root radio
-
 service rmt_storage /system/bin/rmt_storage
     class core
     user root
