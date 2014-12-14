@@ -56,9 +56,6 @@ BOARD_KERNEL_PAGESIZE := 4096
 # Recovery
 TARGET_RECOVERY_FSTAB := device/huawei/msm7x30-common/rootdir/fstab.qcom
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
-BOARD_HAS_NO_SELECT_BUTTON := true
-BOARD_RECOVERY_SWIPE := true
-BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/huawei/msm7x30-common/recovery/recovery_keys.c
 
 # Generic flags
 BOARD_HARDWARE_CLASS := device/huawei/msm7x30-common/cmhw/
