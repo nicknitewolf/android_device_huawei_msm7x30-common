@@ -97,10 +97,6 @@ PRODUCT_PACKAGES += \
 	wpa_supplicant.conf \
 	wpa_supplicant_overlay.conf
 
-# Common apps
-PRODUCT_PACKAGES += \
-	Torch
-
 # Recovery init script
 PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/recovery/init.recovery.qcom.rc:root/init.recovery.qcom.rc
