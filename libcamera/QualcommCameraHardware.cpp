@@ -144,7 +144,6 @@ static const struct camera_size_type for_3D_picture_sizes[] = {
 };
 
 static int data_counter = 0;
-static int sensor_rotation = 0;
 static int record_flag = 0;
 static camera_size_type *picture_sizes;
 static camera_size_type *preview_sizes;
@@ -5213,28 +5212,6 @@ status_t QualcommCameraHardware::setDIS()
     return ret ? NO_ERROR : UNKNOWN_ERROR;
 }
 
-status_t QualcommCameraHardware::setVpeParameters()
-{
-    ALOGV("setVpeParameters E");
-
-    video_rotation_param_ctrl_t rotCtrl;
-    if (sensor_rotation == 0)
-        rotCtrl.rotation = ROT_NONE;
-    else if (sensor_rotation == 90)
-        rotCtrl.rotation = ROT_CLOCKWISE_90;
-    else if (sensor_rotation == 180)
-        rotCtrl.rotation = ROT_CLOCKWISE_180;
-    else
-        rotCtrl.rotation = ROT_CLOCKWISE_270;
-
-    ALOGV("rotCtrl.rotation = %d", rotCtrl.rotation);
-
-    bool ret = native_set_parms(CAMERA_PARM_VIDEO_ROT, sizeof(rotCtrl), &rotCtrl);
-
-    ALOGV("setVpeParameters X (%d)", ret);
-    return ret ? NO_ERROR : UNKNOWN_ERROR;
-}
-
 status_t QualcommCameraHardware::startRecording()
 {
     ALOGV("startRecording E");
@@ -5242,14 +5219,6 @@ status_t QualcommCameraHardware::startRecording()
     Mutex::Autolock l(&mLock);
     mReleasedRecordingFrame = false;
     if ((ret = startPreviewInternal()) == NO_ERROR) {
-        if (mVpeEnabled) {
-            ALOGI("startRecording: VPE enabled, setting vpe parameters");
-            bool status = setVpeParameters();
-            if (status) {
-                ALOGE("Failed to set VPE parameters");
-                return status;
-            }
-        }
         if (mCurrentTarget == TARGET_MSM7630 ||
             mCurrentTarget == TARGET_QSD8250 ||
             mCurrentTarget == TARGET_MSM8660) {
@@ -5336,14 +5305,6 @@ status_t QualcommCameraHardware::startRecordingInternal()
         return NO_ERROR;
     }
 
-    if (mVpeEnabled) {
-        ALOGI("startRecording: VPE enabled, setting vpe parameters");
-        bool status = setVpeParameters();
-        if (status) {
-            ALOGE("Failed to set VPE parameters");
-            return status;
-        }
-    }
     if (mCurrentTarget == TARGET_MSM7630 ||
         mCurrentTarget == TARGET_QSD8250 ||
         mCurrentTarget == TARGET_MSM8660) {
@@ -7321,7 +7282,6 @@ void HAL_getCameraInfo(int cameraId, struct CameraInfo *cameraInfo)
                 ((APP_ORIENTATION - HAL_cameraInfo[i].sensor_mount_angle) + 360)%360;
 
             ALOGI("%s: orientation = %d", __FUNCTION__, cameraInfo->orientation);
-            sensor_rotation = HAL_cameraInfo[i].sensor_mount_angle;
 
             return;
         }
