@@ -6791,12 +6791,10 @@ status_t QualcommCameraHardware::setGpsLocation(const QCameraParameters& params)
 status_t QualcommCameraHardware::setRotation(const QCameraParameters& params)
 {
     status_t rc = NO_ERROR;
-    int sensor_mount_angle = HAL_cameraInfo[HAL_currentCameraId].sensor_mount_angle;
     int rotation = params.getInt(QCameraParameters::KEY_ROTATION);
     if (rotation != NOT_FOUND) {
         if (rotation == 0 || rotation == 90 || rotation == 180
             || rotation == 270) {
-            rotation = (rotation + sensor_mount_angle)%360;
             mParameters.set(QCameraParameters::KEY_ROTATION, rotation);
             mRotation = rotation;
         } else {
