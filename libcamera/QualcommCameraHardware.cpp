@@ -3394,7 +3394,7 @@ bool QualcommCameraHardware::initRaw(bool initJpegHeap)
 
     if (mIs3DModeOn)
         rotation = 0;
-    ret = native_set_parms(CAMERA_PARM_JPEG_ROTATION, sizeof(int), &rotation);
+    ret = native_set_parms(CAMERA_PARM_JPEG_ROTATION, sizeof(rotation), &rotation);
     if (!ret) {
         ALOGE("setting camera id failed");
         return false;
@@ -4502,7 +4502,7 @@ status_t QualcommCameraHardware::takePicture()
         }
     } else {
         int rotation = mParameters.getInt(QCameraParameters::KEY_ROTATION);
-        native_set_parms(CAMERA_PARM_JPEG_ROTATION, sizeof(int), &rotation);
+        native_set_parms(CAMERA_PARM_JPEG_ROTATION, sizeof(rotation), &rotation);
     }
 
     if (!mZslEnable || mZslFlashEnable)
