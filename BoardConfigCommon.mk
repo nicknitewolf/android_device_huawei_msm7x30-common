@@ -58,6 +58,10 @@ BOARD_KERNEL_PAGESIZE := 4096
 TARGET_RECOVERY_FSTAB := device/huawei/msm7x30-common/rootdir/fstab.qcom
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 
+# Filesystem
+# 800MB/~763MiB
+BOARD_SYSTEMIMAGE_PARTITION_SIZE := 800000000
+
 # Generic flags
 BOARD_HARDWARE_CLASS := device/huawei/msm7x30-common/cmhw/
 TARGET_PROVIDES_LIBLIGHT := true
