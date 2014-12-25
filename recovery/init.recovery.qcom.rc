@@ -14,6 +14,12 @@
 # limitations under the License.
 #
 
+on fs
+    # Scan for LVM physical volumes and set up volume groups
+    exec /sbin/lvm vgscan --mknodes --ignorelockingfailure
+    # Activate LVM logical volumes in found volume groups
+    exec /sbin/lvm vgchange -aly --ignorelockingfailure
+
 on boot
     # Disable framebuffer alignment
     write /sys/module/msm_fb/parameters/align_buffer 0

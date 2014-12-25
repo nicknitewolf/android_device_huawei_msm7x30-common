@@ -95,7 +95,11 @@ PRODUCT_PACKAGES += \
 	media_codecs.xml \
 	wpa_supplicant \
 	wpa_supplicant.conf \
-	wpa_supplicant_overlay.conf
+	wpa_supplicant_overlay.conf \
+	lvm \
+	lvm_recovery \
+	lvm.conf \
+	lvm.conf_recovery
 
 # Recovery init script
 PRODUCT_COPY_FILES += \
