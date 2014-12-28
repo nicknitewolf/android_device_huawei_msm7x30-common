@@ -105,6 +105,15 @@ on boot
     setprop net.tcp.usercfg.wifi       1
     setprop net.tcp.usercfg.lte        1
 
+    # Huawei Settings
+    chown system system /sys/devices/platform/msm_otg/mode
+    chown system system /sys/devices/platform/msm_otg/manual_chg
+
+    # HW Props
+    chown system system /sys/hwprops/btmac
+    chown system system /sys/hwprops/wlanmac
+    chown system system /sys/hwprops/reset
+
 # msm specific files that need to be created on /data
 on post-fs-data
     chmod 0664 /sys/devices/platform/msm_sdcc.2/polling
@@ -118,6 +127,9 @@ on post-fs-data
 
     mkdir /data/radio 0770 radio radio
     mkdir /data/system 0775 system system
+
+    # HW Props
+    mkdir /data/misc/hwprops 0770 system system
 
     setprop vold.post_fs_data_done 1
 
@@ -219,3 +231,7 @@ service fuse_sdcard1 /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/sdcard1
 service fuse_usbdisk0 /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/usbdisk0 /storage/usbdisk0
     class late_start
     disabled
+
+service hwprops /system/bin/hwprops
+    class main
+    oneshot

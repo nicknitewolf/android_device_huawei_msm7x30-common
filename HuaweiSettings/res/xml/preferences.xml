@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/pref_general_title" >
+        <SwitchPreference
+            android:key="pref_general_force_mic"
+            android:title="@string/pref_general_force_mic_title"
+            android:summary="@string/pref_general_force_mic_summary"
+            android:defaultValue="false"
+            android:enabled="false" />
+        <ListPreference
+            android:key="pref_general_bt_power"
+            android:title="@string/pref_general_bt_power_title"
+            android:defaultValue="0"
+            android:entries="@array/pref_general_bt_power_entries"
+            android:entryValues="@array/pref_general_bt_power_entry_values"
+            android:enabled="false" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/pref_usb_title" >
+        <SwitchPreference
+            android:key="pref_usb_host"
+            android:title="@string/pref_usb_host_title"
+            android:summary="@string/pref_usb_host_summary"
+            android:defaultValue="false"
+            android:enabled="true" />
+        <ListPreference
+            android:key="pref_usb_current"
+            android:title="@string/pref_usb_current_title"
+            android:defaultValue="-1"
+            android:entries="@array/pref_usb_current_entries"
+            android:entryValues="@array/pref_usb_current_entry_values"
+            android:enabled="false" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/pref_sensors_title" >
+        <Preference
+            android:key="pref_sensors_mag_calib"
+            android:title="@string/pref_sensors_mag_calib_title"
+            android:summary="@string/pref_sensors_mag_calib_summary"
+            android:enabled="false" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/pref_hwaddr_title" >
+        <SwitchPreference
+            android:key="pref_hwaddr_custom"
+            android:title="@string/pref_hwaddr_custom_title"
+            android:summary="@string/pref_hwaddr_custom_summary"
+            android:defaultValue="false"
+            android:enabled="false" />
+        <EditTextPreference
+            android:key="pref_hwaddr_bt"
+            android:title="@string/pref_hwaddr_bt_title"
+            android:enabled="false" />
+        <EditTextPreference
+            android:key="pref_hwaddr_wlan"
+            android:title="@string/pref_hwaddr_wlan_title"
+            android:enabled="false" />
+    </PreferenceCategory>
+</PreferenceScreen>

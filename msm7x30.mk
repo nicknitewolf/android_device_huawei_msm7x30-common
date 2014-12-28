@@ -85,6 +85,7 @@ PRODUCT_PACKAGES += \
 
 # Common packages
 PRODUCT_PACKAGES += \
+	HuaweiSettings \
 	hostapd \
 	hwprops \
 	fstab.qcom \
