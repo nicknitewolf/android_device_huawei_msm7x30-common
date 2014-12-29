@@ -14,9 +14,6 @@
 # limitations under the License.
 #
 
-on init
-    mount tmpfs tmpfs /tmp remount size=350M
-
 on boot
     # Disable framebuffer alignment
     write /sys/module/msm_fb/parameters/align_buffer 0
