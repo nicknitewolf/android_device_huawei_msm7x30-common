@@ -58,6 +58,14 @@ LOCAL_MODULE_CLASS := ETC
 LOCAL_MODULE_PATH := $(TARGET_OUT_ETC)
 include $(BUILD_PREBUILT)
 
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := media_profiles.xml
+LOCAL_SRC_FILES := system/etc/$(LOCAL_MODULE)
+LOCAL_MODULE_CLASS := ETC
+LOCAL_MODULE_PATH := $(TARGET_OUT_ETC)
+include $(BUILD_PREBUILT)
+
 include $(CLEAR_VARS)
 LOCAL_MODULE := wpa_supplicant_overlay.conf
 LOCAL_SRC_FILES := system/etc/wifi/$(LOCAL_MODULE)

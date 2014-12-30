@@ -94,6 +94,7 @@ PRODUCT_PACKAGES += \
 	ueventd.qcom.rc \
 	audio_policy.conf \
 	media_codecs.xml \
+	media_profiles.xml \
 	wpa_supplicant \
 	wpa_supplicant.conf \
 	wpa_supplicant_overlay.conf \
