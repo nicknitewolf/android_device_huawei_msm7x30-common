@@ -71,7 +71,7 @@ BOARD_FLASH_BLOCK_SIZE := 512
 TARGET_USES_ION := true
 TARGET_USE_CUSTOM_LUN_FILE_PATH := /sys/devices/platform/msm_hsusb/gadget/lun%d/file
 TARGET_RELEASETOOLS_EXTENSIONS := device/huawei/msm7x30-common
-TARGET_NEEDS_NON_PIE_SUPPORT := true
+TARGET_ENABLE_NON_PIE_SUPPORT := true
 TARGET_DISABLE_ARM_PIE := true
 MALLOC_IMPL := dlmalloc
 
