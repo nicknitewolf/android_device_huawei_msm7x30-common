@@ -58,6 +58,8 @@ BOARD_KERNEL_PAGESIZE := 4096
 # Recovery
 TARGET_RECOVERY_FSTAB := device/huawei/msm7x30-common/rootdir/fstab.qcom
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
+TW_HAS_NO_BOOT_PARTITION := true
+TW_HAS_NO_RECOVERY_PARTITION := true
 
 # Filesystem
 # 800MiB/839MB

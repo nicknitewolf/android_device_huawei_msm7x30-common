@@ -1,0 +1,12 @@
+# Android fstab file.
+#<src>                                                  <mnt_point>     <type>  <mnt_flags and options>         <fs_mgr_flags>
+# The filesystem that contains the filesystem checker binary (typically /system) cannot
+# specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
+
+#<mnt_point>	<type>		<src>						<flags>
+/cust		vfat		/dev/block/platform/msm_sdcc.2/by-num/p1	flags=backup=y
+/system		ext4		/dev/lvpool/system
+/cache		ext4		/dev/lvpool/cache
+/data		ext4		/dev/lvpool/userdata				flags=length=-16384
+/emmc		auto		/dev/lvpool/media				flags=display="Internal storage";storage
+/sdcard		auto		/dev/block/platform/msm_sdcc.4/by-num/p1	flags=display="SD card";removable;storage

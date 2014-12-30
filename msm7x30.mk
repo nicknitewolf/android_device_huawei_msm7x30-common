@@ -91,6 +91,7 @@ PRODUCT_PACKAGES += \
 	fstab.qcom \
 	init.qcom.rc \
 	init.qcom.usb.rc \
+	twrp.fstab \
 	ueventd.qcom.rc \
 	audio_policy.conf \
 	media_codecs.xml \
