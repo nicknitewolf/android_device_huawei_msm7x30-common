@@ -76,7 +76,4 @@
     <bool name="config_hotswapCapable">true</bool>
 
     <bool name="config_deviceHasVariableButtonBrightness">true</bool>
-
-    <!-- Device supports LED flashlight -->
-    <!--<bool name="config_enableTorch">true</bool>-->
 </resources>
