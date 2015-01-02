@@ -139,7 +139,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	debug.composition.type=dyn \
 	persist.hwc.mdpcomp.enable=true \
 	debug.mdpcomp.maxlayer=3 \
-	debug.mdpcomp.logs=0
+	debug.mdpcomp.logs=0 \
+	debug.mdpcomp.idletime=-1
 
 # Include proprietary stuff
 $(call inherit-product, vendor/huawei/msm7x30-common/msm7x30-common-vendor.mk)
