@@ -6273,6 +6273,8 @@ status_t QualcommCameraHardware::sendCommand(int32_t command, int32_t arg1,
                                        mSendData = true;
                                    mStatsWaitLock.unlock();
                                    return NO_ERROR;
+      case CAMERA_CMD_ENABLE_FOCUS_MOVE_MSG: /* Stub this for now. */
+                                   return NO_ERROR;
 #if 0
       case CAMERA_CMD_FACE_DETECTION_ON:
                                    if(supportsFaceDetection() == false){
