@@ -1209,7 +1209,7 @@ void QualcommCameraHardware::FrameQueue::flush(){
 
 void QualcommCameraHardware::storeTargetType(void) {
     char mDeviceName[PROPERTY_VALUE_MAX];
-    property_get("ro.product.device",mDeviceName," ");
+    property_get("ro.board.platform",mDeviceName," ");
     mCurrentTarget = TARGET_MAX;
     for( int i = 0; i < TARGET_MAX ; i++) {
        if( !strncmp(mDeviceName, targetList[i].targetStr, 7)) {
