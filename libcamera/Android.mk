@@ -82,6 +82,7 @@ LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
 LOCAL_C_INCLUDES += hardware/qcom/display/libgralloc \
                     hardware/qcom/display/libgenlock \
                     hardware/qcom/media/libstagefrighthw
+LOCAL_C_INCLUDES += system/media/camera/include
 
 LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
 
