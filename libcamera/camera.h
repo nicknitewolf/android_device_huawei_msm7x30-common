@@ -570,7 +570,7 @@ typedef enum {
   CAMERA_PARM_AEC_LOCK,
   CAMERA_PARM_AWB_LOCK,
   CAMERA_PARM_RECORDING_HINT
-} mm_camera_parm_type_t;
+} camera_parm_type_t;
 
 
 typedef struct {
@@ -1620,22 +1620,22 @@ typedef struct {
 
 typedef struct {
   /* used for querying the tables from mm_camera*/
-  mm_camera_status_t (*mm_camera_query_parms) (mm_camera_parm_type_t parm_type,
+  mm_camera_status_t (*mm_camera_query_parms) (camera_parm_type_t parm_type,
     void** pp_values, uint32_t* p_count);
 
   /* set a parm<92>s current value */
-  mm_camera_status_t (*mm_camera_set_parm) (mm_camera_parm_type_t parm_type,
+  mm_camera_status_t (*mm_camera_set_parm) (camera_parm_type_t parm_type,
     void* p_value);
 
   /* get a parm<92>s current value */
-  mm_camera_status_t(*mm_camera_get_parm) (mm_camera_parm_type_t parm_type,
+  mm_camera_status_t(*mm_camera_get_parm) (camera_parm_type_t parm_type,
     void* p_value);
 
   /* check if the parm is supported */
-  int8_t (*mm_camera_is_supported) (mm_camera_parm_type_t parm_type);
+  int8_t (*mm_camera_is_supported) (camera_parm_type_t parm_type);
 
   /* check if the sub parm is supported */
-  int8_t (*mm_camera_is_parm_supported) (mm_camera_parm_type_t parm_type,
+  int8_t (*mm_camera_is_parm_supported) (camera_parm_type_t parm_type,
    void* sub_parm);
 
 }mm_camera_config;
