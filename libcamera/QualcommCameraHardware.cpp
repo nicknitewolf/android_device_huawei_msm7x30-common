@@ -2043,7 +2043,7 @@ void QualcommCameraHardware::initDefaultParameters()
     numCapture = 1;
     if(mZslEnable) {
         int maxSnapshot = MAX_SNAPSHOT_BUFFERS - 2;
-        char value[5];
+        char value[PROPERTY_VALUE_MAX];
         property_get("persist.camera.hal.capture", value, "1");
         numCapture = atoi(value);
         if(numCapture > maxSnapshot)
