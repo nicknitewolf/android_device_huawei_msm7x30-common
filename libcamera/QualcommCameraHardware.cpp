@@ -281,13 +281,13 @@ static liveshotState liveshot_state = LIVESHOT_DONE;
 #define Q12 4096
 
 static const target_map targetList [] = {
-    { "msm7625", TARGET_MSM7625 },
-    { "msm7625a", TARGET_MSM7625A },
-    { "msm7627", TARGET_MSM7627 },
-    { "msm7627a", TARGET_MSM7627A },
-    { "qsd8250", TARGET_QSD8250 },
-    { "msm7630", TARGET_MSM7630 },
-    { "msm8660", TARGET_MSM8660 }
+    { "msm7x25", TARGET_MSM7625 },
+    { "msm7x25a", TARGET_MSM7625A },
+    { "msm7x27", TARGET_MSM7627 },
+    { "msm7x27a", TARGET_MSM7627A },
+    { "qsd8x50", TARGET_QSD8250 },
+    { "msm7x30", TARGET_MSM7630 },
+    { "msm8x60", TARGET_MSM8660 }
 
 };
 static targetType mCurrentTarget = TARGET_MAX;
@@ -1215,11 +1215,11 @@ void QualcommCameraHardware::storeTargetType(void) {
        if( !strncmp(mDeviceName, targetList[i].targetStr, 7)) {
          mCurrentTarget = targetList[i].targetEnum;
          if(mCurrentTarget == TARGET_MSM7625) {
-           if(!strncmp(mDeviceName, "msm7625a" , 8))
+           if(!strncmp(mDeviceName, "msm7x25a" , 8))
              mCurrentTarget = TARGET_MSM7625A;
             }
            if(mCurrentTarget == TARGET_MSM7627) {
-             if(!strncmp(mDeviceName, "msm7627a" , 8))
+             if(!strncmp(mDeviceName, "msm7x27a" , 8))
                mCurrentTarget = TARGET_MSM7627A;
            }
            break;
@@ -9848,13 +9848,13 @@ extern "C" void HAL_getCameraInfo(int cameraId, struct CameraInfo* cameraInfo)
             // enough.
             if(cameraInfo->facing == CAMERA_FACING_FRONT)
                 cameraInfo->orientation = HAL_cameraInfo[i].sensor_mount_angle;
-            else if( !strncmp(mDeviceName, "msm7625a", 8))
+            else if( !strncmp(mDeviceName, "msm7x25a", 8))
                 cameraInfo->orientation = HAL_cameraInfo[i].sensor_mount_angle;
-            else if( !strncmp(mDeviceName, "msm7627a", 8))
+            else if( !strncmp(mDeviceName, "msm7x27a", 8))
                 cameraInfo->orientation = HAL_cameraInfo[i].sensor_mount_angle;
-            else if( !strncmp(mDeviceName, "msm7627", 7))
+            else if( !strncmp(mDeviceName, "msm7x27", 7))
                 cameraInfo->orientation = HAL_cameraInfo[i].sensor_mount_angle;
-            else if( !strncmp(mDeviceName, "msm8660", 7))
+            else if( !strncmp(mDeviceName, "msm8x60", 7))
                 cameraInfo->orientation = HAL_cameraInfo[i].sensor_mount_angle;
             else
                 cameraInfo->orientation = ((APP_ORIENTATION - HAL_cameraInfo[i].sensor_mount_angle) + 360)%360;
