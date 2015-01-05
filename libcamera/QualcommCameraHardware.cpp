@@ -1450,9 +1450,6 @@ QualcommCameraHardware::QualcommCameraHardware()
     for (int i = 0; i < kRecordBufferCount; i++)
         metadata_memory[i] = NULL;
     mJpegLiveSnapMapped = NULL;
-    if(HAL_currentCameraMode == CAMERA_SUPPORT_MODE_3D){
-        mIs3DModeOn = true;
-    }
     /* TODO: Will remove this command line interface at end */
     property_get("persist.camera.hal.3dmode", value, "0");
     int mode = atoi(value);
@@ -9978,19 +9975,6 @@ extern "C" void HAL_getCameraInfo(int cameraId, struct CameraInfo* cameraInfo)
                 cameraInfo->orientation = ((APP_ORIENTATION - HAL_cameraInfo[i].sensor_mount_angle) + 360)%360;
 
             ALOGI("%s: orientation = %d", __FUNCTION__, cameraInfo->orientation);
-            cameraInfo->mode = 0;
-            if(HAL_cameraInfo[i].modes_supported & CAMERA_MODE_2D)
-                cameraInfo->mode |= CAMERA_SUPPORT_MODE_2D;
-            if(HAL_cameraInfo[i].modes_supported & CAMERA_MODE_3D)
-                cameraInfo->mode |= CAMERA_SUPPORT_MODE_3D;
-            if((HAL_cameraInfo[i].position == BACK_CAMERA )&&
-                !strncmp(mDeviceName, "msm8660", 7)){
-                cameraInfo->mode |= CAMERA_ZSL_MODE;
-            } else{
-                cameraInfo->mode |= CAMERA_NONZSL_MODE;
-            }
-
-            ALOGI("%s: modes supported = %d", __FUNCTION__, cameraInfo->mode);
 
             return;
         }
