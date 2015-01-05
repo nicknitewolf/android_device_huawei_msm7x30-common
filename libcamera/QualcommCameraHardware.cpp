@@ -3716,7 +3716,7 @@ ALOGE("%s Got preview dimension as %d x %d ", __func__, previewWidth, previewHei
     mInSnapshotModeWaitLock.unlock();
 
     pmem_region = "/dev/pmem_adsp";
-    ion_heap = ION_CAMERA_HEAP_ID;
+    ion_heap = ION_CP_MM_HEAP_ID;
 
     int cnt = 0;
 
@@ -4163,9 +4163,6 @@ bool QualcommCameraHardware::createSnapshotMemory (int numberOfRawBuffers, int n
     int ret;
     int ion_heap = ION_CP_MM_HEAP_ID;
 
-    if((mCurrentTarget == TARGET_MSM7627A) || (mCurrentTarget == TARGET_MSM7630))
-       ion_heap = ION_CAMERA_HEAP_ID;
-
     if(mCurrentTarget == TARGET_MSM8660) {
        pmem_region = "/dev/pmem_smipool";
     } else {
@@ -4490,7 +4487,7 @@ bool QualcommCameraHardware::initRaw(bool initJpegHeap)
 
     //PostView
     pmem_region = "/dev/pmem_adsp";
-    ion_heap = ION_CAMERA_HEAP_ID;
+    ion_heap = ION_CP_MM_HEAP_ID;
     // Create memory for Raw YUV frames and Jpeg images
     if( createSnapshotMemory(numCapture, numCapture, initJpegHeap) == false )
     {
@@ -4771,7 +4768,7 @@ status_t QualcommCameraHardware::getBuffersAndStartPreview() {
 
 #ifdef USE_ION
         mPreviewWindow->set_usage (mPreviewWindow,
-            GRALLOC_USAGE_PRIVATE_CAMERA_HEAP |
+            GRALLOC_USAGE_PRIVATE_MM_HEAP |
             GRALLOC_USAGE_PRIVATE_UNCACHED);
 #else
         mPreviewWindow->set_usage (mPreviewWindow,
@@ -6742,8 +6739,6 @@ bool QualcommCameraHardware::initRecord()
     int active, type =0;
 
     ALOGV("initREcord E");
-    if((mCurrentTarget == TARGET_MSM7630))
-       ion_heap = ION_CAMERA_HEAP_ID;
 
     if(mZslEnable){
        ALOGV("initRecord X.. Not intializing Record buffers in ZSL mode");
