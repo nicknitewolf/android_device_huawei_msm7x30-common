@@ -213,8 +213,8 @@ void QCameraParameters::setOrientation(int orientation)
         //XXX ALOGE("Value \"%s\"contains invalid character (= or ;)", value);
     //snprintf(str, sizeof(str), "%d", value);
         //ALOGE("Cannot find delimeter (%c) in str=%s", delim, str);
-		
-		
+
+
 // Parse string like "(1, 2, 3, 4, ..., N)"
 // num is pointer to an allocated array of size N
 static int parseNDimVector(const char *str, int *num, int N, char delim = ',')
@@ -245,9 +245,9 @@ static int parseNDimVector(const char *str, int *num, int N, char delim = ',')
 
             //ALOGE("Picture sizes string \"%s\" contains invalid character.", sizesStr);
     //snprintf(str, sizeof(str), "%dx%d", width, height);
-	
-	
-	
+
+
+
 // Parse string like "640x480" or "10000,20000"
 static int parse_pair(const char *str, int *first, int *second, char delim,
                       char **endptr = NULL)
