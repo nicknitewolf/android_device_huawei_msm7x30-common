@@ -87,9 +87,9 @@ LOCAL_C_INCLUDES += system/media/camera/include
 LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
 
 ifeq ($(call is-board-platform,msm8960),true)
-LOCAL_SHARED_LIBRARIES:= libutils libui libcamera_client liblog libcutils libmmjpeg libmmstillomx libimage-jpeg-enc-omx-comp
+LOCAL_SHARED_LIBRARIES:= libutils libui libcamera_client liblog libcutils libmmstillomx libimage-jpeg-enc-omx-comp
 else
-LOCAL_SHARED_LIBRARIES:= libutils libui libcamera_client liblog libcutils libmmjpeg
+LOCAL_SHARED_LIBRARIES:= libutils libui libcamera_client liblog libcutils
 endif
 
 LOCAL_SHARED_LIBRARIES+= libgenlock libbinder
