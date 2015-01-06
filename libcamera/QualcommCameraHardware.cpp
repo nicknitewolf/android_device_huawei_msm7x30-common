@@ -1639,9 +1639,6 @@ void QualcommCameraHardware::initDefaultParameters()
         mParameters.set(QCameraParameters::KEY_SUPPORTED_PREVIEW_SIZES,
                             preview_size_values.string());
 
-        mParameters.set(QCameraParameters::KEY_SUPPORTED_VIDEO_SIZES,
-                            preview_size_values.string());
-
         mParameters.set(QCameraParameters::KEY_SUPPORTED_PICTURE_SIZES,
                             picture_size_values.string());
         mParameters.set(QCameraParameters::KEY_VIDEO_SNAPSHOT_SUPPORTED,
@@ -1764,11 +1761,6 @@ void QualcommCameraHardware::initDefaultParameters()
             redeye_reduction, sizeof(redeye_reduction) / sizeof(str_map));
 
         parameter_string_initialized = true;
-    }
-    //set video size
-    if(( mCurrentTarget == TARGET_MSM7630 ) || (mCurrentTarget == TARGET_QSD8250) || (mCurrentTarget == TARGET_MSM8660)) {
-       String8 vSize = create_sizes_str(preview_sizes, 1);
-       mParameters.set(QCameraParameters::KEY_VIDEO_SIZE, vSize.string());
     }
     if(mIs3DModeOn){
        ALOGE("In initDefaultParameters - 3D mode on so set the default preview to 1280 x 720");
