@@ -606,7 +606,6 @@ private:
     int mRotation;
     bool mResetWindowCrop;
     int mThumbnailWidth, mThumbnailHeight;
-    status_t setVpeParameters();
     status_t setDIS();
     bool strTexturesOn;
     int mPictureWidth;

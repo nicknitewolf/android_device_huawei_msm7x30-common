@@ -6940,35 +6940,6 @@ status_t QualcommCameraHardware::setDIS() {
     return ret ? NO_ERROR : UNKNOWN_ERROR;
 }
 
-status_t QualcommCameraHardware::setVpeParameters()
-{
-    ALOGV("setVpeParameters E");
-
-    video_rotation_param_ctrl_t rotCtrl;
-    bool ret = true;
-    ALOGV("videoWidth = %d, videoHeight = %d", videoWidth, videoHeight);
-    rotCtrl.rotation = (mRotation == 0) ? ROT_NONE :
-                       ((mRotation == 90) ? ROT_CLOCKWISE_90 :
-                  ((mRotation == 180) ? ROT_CLOCKWISE_180 : ROT_CLOCKWISE_270));
-
-    if( ((videoWidth == 1280 && videoHeight == 720) || (videoWidth == 800 && videoHeight == 480))
-        && (mRotation == 90 || mRotation == 270) ){
-        /* Due to a limitation at video core to support heights greater than 720, adding this check.
-         * This is a temporary hack, need to be removed once video core support is available
-         */
-        ALOGI("video resolution (%dx%d) with rotation (%d) is not supported, setting rotation to NONE",
-            videoWidth, videoHeight, mRotation);
-        rotCtrl.rotation = ROT_NONE;
-    }
-    ALOGV("rotCtrl.rotation = %d", rotCtrl.rotation);
-
-    ret = native_set_parms(CAMERA_PARM_VIDEO_ROT,
-                           sizeof(rotCtrl), &rotCtrl);
-
-    ALOGV("setVpeParameters X (%d)", ret);
-    return ret ? NO_ERROR : UNKNOWN_ERROR;
-}
-
 status_t QualcommCameraHardware::startRecording()
 {
     ALOGV("startRecording E");
@@ -6976,14 +6947,6 @@ status_t QualcommCameraHardware::startRecording()
     Mutex::Autolock l(&mLock);
     mReleasedRecordingFrame = false;
     if( (ret=startPreviewInternal())== NO_ERROR){
-      if(mVpeEnabled){
-        ALOGI("startRecording: VPE enabled, setting vpe parameters");
-        bool status = setVpeParameters();
-        if(status) {
-          ALOGE("Failed to set VPE parameters");
-          return status;
-        }
-      }
       if( ( mCurrentTarget == TARGET_MSM7630 ) || (mCurrentTarget == TARGET_QSD8250) ||
         (mCurrentTarget == TARGET_MSM8660))  {
         for (int cnt = 0; cnt < kRecordBufferCount; cnt++) {
@@ -7071,14 +7034,6 @@ status_t QualcommCameraHardware::startRecordingInternal()
         return NO_ERROR;
     }
 
-    if(mVpeEnabled){
-        ALOGI("startRecording: VPE enabled, setting vpe parameters");
-        bool status = setVpeParameters();
-        if(status) {
-            ALOGE("Failed to set VPE parameters");
-            return status;
-        }
-    }
     if( ( mCurrentTarget == TARGET_MSM7630 ) || (mCurrentTarget == TARGET_QSD8250) || (mCurrentTarget == TARGET_MSM8660))  {
         // Remove the left out frames in busy Q and them in free Q.
         // this should be done before starting video_thread so that,
