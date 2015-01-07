@@ -1972,6 +1972,7 @@ void QualcommCameraHardware::initExifData(){
                   20, 1, (void *)mExifValues.dateTime);
     }
     addExifTag(EXIFTAGID_FOCAL_LENGTH, EXIF_RATIONAL, 1, 1, (void *)&(mExifValues.focalLength));
+    addExifTag(EXIFTAGID_FLASH,EXIF_SHORT,1,1,(void *)&(mExifValues.flashMode));
     addExifTag(EXIFTAGID_ISO_SPEED_RATING,EXIF_SHORT,1,1,(void *)&(mExifValues.isoSpeed));
 
     if(mExifValues.mGpsProcess) {
@@ -2043,6 +2044,30 @@ void QualcommCameraHardware::setExifTags()
                 QCameraParameters::KEY_FOCAL_LENGTH) * FOCAL_LENGTH_DECIMAL_PRECISION);
 
     mExifValues.focalLength = getRational(focalLengthValue, FOCAL_LENGTH_DECIMAL_PRECISION);
+
+    //Set flash
+    str = mParameters.get(QCameraParameters::KEY_FLASH_MODE);
+    if (str != NULL) {
+        int is_flash_fired = 0;
+        if (mCfgControl.mm_camera_get_parm(CAMERA_PARM_QUERY_FALSH4SNAP,
+            &is_flash_fired) != MM_CAMERA_SUCCESS) {
+            mExifValues.flashMode = FLASH_SNAP; //for No Flash support,bit 5 will be 1
+        } else {
+            if (!strcmp(str, QCameraParameters::FLASH_MODE_ON))
+                mExifValues.flashMode = 1;
+
+            if (!strcmp(str, QCameraParameters::FLASH_MODE_OFF))
+                mExifValues.flashMode = 0;
+
+            if (!strcmp(str, QCameraParameters::FLASH_MODE_AUTO)) {
+                //for AUTO bits 3 and 4 will be 1
+                //for flash fired bit 0 will be 1, else 0
+                mExifValues.flashMode = FLASH_AUTO;
+                if (is_flash_fired)
+                   mExifValues.flashMode |= (is_flash_fired >> 1);
+            }
+        }
+    }
 
     //Set ISO Speed
     mExifValues.isoSpeed = getISOSpeedValue();
