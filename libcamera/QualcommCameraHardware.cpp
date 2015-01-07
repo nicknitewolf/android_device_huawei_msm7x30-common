@@ -193,6 +193,10 @@ static struct camera_size_type zsl_picture_sizes[] = {
   { 176, 144} // QCIF
 };
 
+static int iso_speed_values[] = {
+    0, 1, 100, 200, 400, 800, 1600
+};
+
 static struct camera_size_type for_3D_picture_sizes[] = {
   { 1920, 1080},
 };
@@ -277,9 +281,7 @@ static inline unsigned clp2(unsigned x)
     return x + 1;
 }
 
-static int exif_table_numEntries = 0;
-#define MAX_EXIF_TABLE_ENTRIES 14
-exif_tags_info_t exif_data[MAX_EXIF_TABLE_ENTRIES];
+
 //static zoom_crop_info zoomCropInfo;
 static android_native_rect_t zoomCropInfo;
 static void *mLastQueuedFrame = NULL;
@@ -1083,7 +1085,8 @@ QualcommCameraHardware::QualcommCameraHardware()
       mHdrMode(false ),
       mZslEnable(false),
       mStoreMetaDataInFrame(0),
-      mRecordingState(0)
+      mRecordingState(0),
+      mExifTableNumEntries(0)
 {
     ALOGI("QualcommCameraHardware constructor E");
     mMMCameraDLRef = MMCameraDL::getInstance();
@@ -1915,191 +1918,257 @@ bool static native_stop_ops(mm_camera_ops_type_t  type, void* value)
 }
 /*==========================================================================*/
 
-
-#define GPS_PROCESSING_METHOD_SIZE  101
 #define FOCAL_LENGTH_DECIMAL_PRECISON 100
 
-static const char ExifAsciiPrefix[] = { 0x41, 0x53, 0x43, 0x49, 0x49, 0x0, 0x0, 0x0 };
-#define EXIF_ASCII_PREFIX_SIZE (sizeof(ExifAsciiPrefix))
+//EXIF functions
+void QualcommCameraHardware::deinitExifData()
+{
+    ALOGD("Clearing EXIF data");
+    for(int i=0; i<MAX_EXIF_TABLE_ENTRIES; i++)
+    {
+        //clear all data
+        memset(&mExifData[i], 0x00, sizeof(exif_tags_info_t));
+    }
+    mExifTableNumEntries = 0;
+}
 
-static rat_t latitude[3];
-static rat_t longitude[3];
-static char lonref[2];
-static char latref[2];
-static rat_t altitude;
-static rat_t gpsTimestamp[3];
-static char gpsDatestamp[20];
-static char dateTime[20];
-static rat_t focalLength;
-static uint16_t flashMode;
-static int iso_arr[] = {0,1,100,200,400,800,1600};
-static uint16_t isoMode;
-static char gpsProcessingMethod[EXIF_ASCII_PREFIX_SIZE + GPS_PROCESSING_METHOD_SIZE];
-static void addExifTag(exif_tag_id_t tagid, exif_tag_type_t type,
+void QualcommCameraHardware::addExifTag(exif_tag_id_t tagid, exif_tag_type_t type,
                         uint32_t count, uint8_t copy, void *data) {
 
-    if(exif_table_numEntries == MAX_EXIF_TABLE_ENTRIES) {
-        ALOGE("Number of entries exceeded limit");
+    if(mExifTableNumEntries >= MAX_EXIF_TABLE_ENTRIES) {
+        ALOGE("%s: Number of entries exceeded limit", __func__);
         return;
     }
-
-    int index = exif_table_numEntries;
-    exif_data[index].tag_id = tagid;
-    exif_data[index].tag_entry.type = type;
-    exif_data[index].tag_entry.count = count;
-    exif_data[index].tag_entry.copy = copy;
+    int index = mExifTableNumEntries;
+    mExifData[index].tag_id = tagid;
+    mExifData[index].tag_entry.type = type;
+    mExifData[index].tag_entry.count = count;
+    mExifData[index].tag_entry.copy = copy;
     if((type == EXIF_RATIONAL) && (count > 1))
-        exif_data[index].tag_entry.data._rats = (rat_t *)data;
+        mExifData[index].tag_entry.data._rats = (rat_t *)data;
     if((type == EXIF_RATIONAL) && (count == 1))
-        exif_data[index].tag_entry.data._rat = *(rat_t *)data;
+        mExifData[index].tag_entry.data._rat = *(rat_t *)data;
     else if(type == EXIF_ASCII)
-        exif_data[index].tag_entry.data._ascii = (char *)data;
+        mExifData[index].tag_entry.data._ascii = (char *)data;
     else if(type == EXIF_BYTE)
-        exif_data[index].tag_entry.data._byte = *(uint8_t *)data;
+        mExifData[index].tag_entry.data._byte = *(uint8_t *)data;
     else if((type == EXIF_SHORT) && (count > 1))
-        exif_data[index].tag_entry.data._shorts = (uint16_t *)data;
+        mExifData[index].tag_entry.data._shorts = (uint16_t *)data;
     else if((type == EXIF_SHORT) && (count == 1))
-        exif_data[index].tag_entry.data._short = *(uint16_t *)data;
+        mExifData[index].tag_entry.data._short = *(uint16_t *)data;
     // Increase number of entries
-    exif_table_numEntries++;
+    mExifTableNumEntries++;
 }
 
-static void parseLatLong(const char *latlonString, int *pDegrees,
-                           int *pMinutes, int *pSeconds ) {
-
-    double value = atof(latlonString);
-    value = fabs(value);
-    int degrees = (int) value;
-
-    double remainder = value - degrees;
-    int minutes = (int) (remainder * 60);
-    int seconds = (int) (((remainder * 60) - minutes) * 60 * 1000);
-
-    *pDegrees = degrees;
-    *pMinutes = minutes;
-    *pSeconds = seconds;
+rat_t getRational(int num, int denom)
+{
+    rat_t temp = {num, denom};
+    return temp;
 }
 
-static void setLatLon(exif_tag_id_t tag, const char *latlonString) {
+void QualcommCameraHardware::initExifData(){
+    if(mExifValues.dateTime) {
+        addExifTag(EXIFTAGID_EXIF_DATE_TIME_ORIGINAL, EXIF_ASCII,
+                  20, 1, (void *)mExifValues.dateTime);
+    }
+    addExifTag(EXIFTAGID_FOCAL_LENGTH, EXIF_RATIONAL, 1, 1, (void *)&(mExifValues.focalLength));
+    addExifTag(EXIFTAGID_ISO_SPEED_RATING,EXIF_SHORT,1,1,(void *)&(mExifValues.isoSpeed));
 
-    int degrees, minutes, seconds;
+    if(mExifValues.mGpsProcess) {
+        addExifTag(EXIFTAGID_GPS_PROCESSINGMETHOD, EXIF_ASCII,
+           EXIF_ASCII_PREFIX_SIZE + strlen(mExifValues.gpsProcessingMethod + EXIF_ASCII_PREFIX_SIZE) + 1,
+           1, (void *)mExifValues.gpsProcessingMethod);
+    }
 
-    parseLatLong(latlonString, &degrees, &minutes, &seconds);
+    if(mExifValues.mLatitude) {
+        addExifTag(EXIFTAGID_GPS_LATITUDE, EXIF_RATIONAL, 3, 1, (void *)mExifValues.latitude);
 
-    rat_t value[3] = { {degrees, 1},
-                       {minutes, 1},
-                       {seconds, 1000} };
+        if(mExifValues.latRef) {
+            addExifTag(EXIFTAGID_GPS_LATITUDE_REF, EXIF_ASCII, 2,
+                                    1, (void *)mExifValues.latRef);
+        }
+    }
 
-    if(tag == EXIFTAGID_GPS_LATITUDE) {
-        memcpy(latitude, value, sizeof(latitude));
-        addExifTag(EXIFTAGID_GPS_LATITUDE, EXIF_RATIONAL, 3,
-                    1, (void *)latitude);
-    } else {
-        memcpy(longitude, value, sizeof(longitude));
-        addExifTag(EXIFTAGID_GPS_LONGITUDE, EXIF_RATIONAL, 3,
-                    1, (void *)longitude);
+    if(mExifValues.mLongitude) {
+        addExifTag(EXIFTAGID_GPS_LONGITUDE, EXIF_RATIONAL, 3, 1, (void *)mExifValues.longitude);
+
+        if(mExifValues.lonRef) {
+            addExifTag(EXIFTAGID_GPS_LONGITUDE_REF, EXIF_ASCII, 2,
+                                1, (void *)mExifValues.lonRef);
+        }
+    }
+
+    if(mExifValues.mAltitude) {
+        addExifTag(EXIFTAGID_GPS_ALTITUDE, EXIF_RATIONAL, 1,
+                    1, (void *)&(mExifValues.altitude));
+
+        addExifTag(EXIFTAGID_GPS_ALTITUDE_REF, EXIF_BYTE, 1, 1, (void *)&mExifValues.mAltitude_ref);
+    }
+
+    if(mExifValues.mTimeStamp) {
+        time_t unixTime;
+        struct tm *UTCTimestamp;
+
+        unixTime = (time_t)mExifValues.mGPSTimestamp;
+        UTCTimestamp = gmtime(&unixTime);
+
+        strftime(mExifValues.gpsDateStamp, sizeof(mExifValues.gpsDateStamp), "%Y:%m:%d", UTCTimestamp);
+        addExifTag(EXIFTAGID_GPS_DATESTAMP, EXIF_ASCII,
+                          strlen(mExifValues.gpsDateStamp)+1 , 1, (void *)mExifValues.gpsDateStamp);
+
+        mExifValues.gpsTimeStamp[0] = getRational(UTCTimestamp->tm_hour, 1);
+        mExifValues.gpsTimeStamp[1] = getRational(UTCTimestamp->tm_min, 1);
+        mExifValues.gpsTimeStamp[2] = getRational(UTCTimestamp->tm_sec, 1);
+
+        addExifTag(EXIFTAGID_GPS_TIMESTAMP, EXIF_RATIONAL,
+                  3, 1, (void *)mExifValues.gpsTimeStamp);
+        ALOGE("EXIFTAGID_GPS_TIMESTAMP set");
     }
 }
 
-void QualcommCameraHardware::setGpsParameters() {
+//Add all exif tags in this function
+void QualcommCameraHardware::setExifTags()
+{
+    const char *str;
+
+    //set TimeStamp
+    str = mParameters.get(QCameraParameters::KEY_QC_EXIF_DATETIME);
+    if(str != NULL) {
+      strncpy(mExifValues.dateTime, str, 19);
+      mExifValues.dateTime[19] = '\0';
+    }
+
+    //Set focal length
+    int focalLengthValue = (int) (mParameters.getFloat(
+                QCameraParameters::KEY_FOCAL_LENGTH) * FOCAL_LENGTH_DECIMAL_PRECISION);
+
+    mExifValues.focalLength = getRational(focalLengthValue, FOCAL_LENGTH_DECIMAL_PRECISION);
+
+    //Set ISO Speed
+    mExifValues.isoSpeed = getISOSpeedValue();
+
+    //get time and date from system
+    time_t rawtime;
+    struct tm * timeinfo;
+    time(&rawtime);
+    timeinfo = localtime (&rawtime);
+    //Write datetime according to EXIF Spec
+    //"YYYY:MM:DD HH:MM:SS" (20 chars including \0)
+    snprintf(mExifValues.dateTime, 20, "%04d:%02d:%02d %02d:%02d:%02d",
+                timeinfo->tm_year + 1900, timeinfo->tm_mon + 1,
+                timeinfo->tm_mday, timeinfo->tm_hour,
+                timeinfo->tm_min, timeinfo->tm_sec);
+    //set gps tags
+    setExifTagsGPS();
+}
+
+void QualcommCameraHardware::setExifTagsGPS()
+{
     const char *str = NULL;
 
+    //Set GPS processing method
     str = mParameters.get(QCameraParameters::KEY_GPS_PROCESSING_METHOD);
-
-    if(str!=NULL ){
-       memcpy(gpsProcessingMethod, ExifAsciiPrefix, EXIF_ASCII_PREFIX_SIZE);
-       strncpy(gpsProcessingMethod + EXIF_ASCII_PREFIX_SIZE, str,
+    if(str != NULL) {
+       memcpy(mExifValues.gpsProcessingMethod, ExifAsciiPrefix, EXIF_ASCII_PREFIX_SIZE);
+       strncpy(mExifValues.gpsProcessingMethod + EXIF_ASCII_PREFIX_SIZE, str,
            GPS_PROCESSING_METHOD_SIZE - 1);
-       gpsProcessingMethod[EXIF_ASCII_PREFIX_SIZE + GPS_PROCESSING_METHOD_SIZE-1] = '\0';
-       addExifTag(EXIFTAGID_GPS_PROCESSINGMETHOD, EXIF_ASCII,
-           EXIF_ASCII_PREFIX_SIZE + strlen(gpsProcessingMethod + EXIF_ASCII_PREFIX_SIZE) + 1,
-           1, (void *)gpsProcessingMethod);
+       mExifValues.gpsProcessingMethod[EXIF_ASCII_PREFIX_SIZE + GPS_PROCESSING_METHOD_SIZE-1] = '\0';
+       ALOGE("EXIFTAGID_GPS_PROCESSINGMETHOD = %s %s", mExifValues.gpsProcessingMethod,
+                                                    mExifValues.gpsProcessingMethod+8);
+       mExifValues.mGpsProcess  = true;
+    }else{
+        mExifValues.mGpsProcess = false;
     }
-
     str = NULL;
 
     //Set Latitude
     str = mParameters.get(QCameraParameters::KEY_GPS_LATITUDE);
     if(str != NULL) {
-        setLatLon(EXIFTAGID_GPS_LATITUDE, str);
+        parseGPSCoordinate(str, mExifValues.latitude);
+        ALOGE("EXIFTAGID_GPS_LATITUDE = %s", str);
+
         //set Latitude Ref
         float latitudeValue = mParameters.getFloat(QCameraParameters::KEY_GPS_LATITUDE);
-        latref[0] = 'N';
-        if(latitudeValue < 0 ){
-            latref[0] = 'S';
+        if(latitudeValue < 0.0f) {
+            mExifValues.latRef[0] = 'S';
+        } else {
+            mExifValues.latRef[0] = 'N';
         }
-        latref[1] = '\0';
-        mParameters.set(QCameraParameters::KEY_QC_GPS_LATITUDE_REF, latref);
-        addExifTag(EXIFTAGID_GPS_LATITUDE_REF, EXIF_ASCII, 2,
-                                1, (void *)latref);
+        mExifValues.latRef[1] = '\0';
+        mExifValues.mLatitude = true;
+        mParameters.set(QCameraParameters::KEY_QC_GPS_LATITUDE_REF,mExifValues.latRef);
+        ALOGE("EXIFTAGID_GPS_LATITUDE_REF = %s", mExifValues.latRef);
+    }else{
+        mExifValues.mLatitude = false;
     }
 
     //set Longitude
     str = NULL;
     str = mParameters.get(QCameraParameters::KEY_GPS_LONGITUDE);
     if(str != NULL) {
-        setLatLon(EXIFTAGID_GPS_LONGITUDE, str);
+        parseGPSCoordinate(str, mExifValues.longitude);
+        ALOGE("EXIFTAGID_GPS_LONGITUDE = %s", str);
+
         //set Longitude Ref
         float longitudeValue = mParameters.getFloat(QCameraParameters::KEY_GPS_LONGITUDE);
-        lonref[0] = 'E';
-        if(longitudeValue < 0){
-            lonref[0] = 'W';
+        if(longitudeValue < 0.0f) {
+            mExifValues.lonRef[0] = 'W';
+        } else {
+            mExifValues.lonRef[0] = 'E';
         }
-        lonref[1] = '\0';
-        mParameters.set(QCameraParameters::KEY_QC_GPS_LONGITUDE_REF, lonref);
-        addExifTag(EXIFTAGID_GPS_LONGITUDE_REF, EXIF_ASCII, 2,
-                                1, (void *)lonref);
+        mExifValues.lonRef[1] = '\0';
+        mExifValues.mLongitude = true;
+        ALOGE("EXIFTAGID_GPS_LONGITUDE_REF = %s", mExifValues.lonRef);
+        mParameters.set(QCameraParameters::KEY_QC_GPS_LONGITUDE_REF, mExifValues.lonRef);
+    }else{
+        mExifValues.mLongitude = false;
     }
 
     //set Altitude
-    str = NULL;
     str = mParameters.get(QCameraParameters::KEY_GPS_ALTITUDE);
     if(str != NULL) {
         double value = atof(str);
-        int ref = 0;
+        mExifValues.mAltitude_ref = 0;
         if(value < 0){
-            ref = 1;
+            mExifValues.mAltitude_ref = 1;
             value = -value;
         }
-        uint32_t value_meter = value * 1000;
-        rat_t alt_value = {value_meter, 1000};
-        memcpy(&altitude, &alt_value, sizeof(altitude));
-        addExifTag(EXIFTAGID_GPS_ALTITUDE, EXIF_RATIONAL, 1,
-                    1, (void *)&altitude);
+        mExifValues.altitude = getRational(value*1000, 1000);
+        mExifValues.mAltitude = true;
         //set AltitudeRef
-        mParameters.set(QCameraParameters::KEY_QC_GPS_ALTITUDE_REF, ref);
-        addExifTag(EXIFTAGID_GPS_ALTITUDE_REF, EXIF_BYTE, 1,
-                    1, (void *)&ref);
+        mParameters.set(QCameraParameters::KEY_QC_GPS_ALTITUDE_REF, mExifValues.mAltitude_ref);
+        ALOGE("EXIFTAGID_GPS_ALTITUDE = %f", value);
+    }else{
+        mExifValues.mAltitude = false;
     }
 
     //set Gps TimeStamp
     str = NULL;
     str = mParameters.get(QCameraParameters::KEY_GPS_TIMESTAMP);
     if(str != NULL) {
-
-      long value = atol(str);
-      time_t unixTime;
-      struct tm *UTCTimestamp;
-
-      unixTime = (time_t)value;
-      UTCTimestamp = gmtime(&unixTime);
-
-      strftime(gpsDatestamp, sizeof(gpsDatestamp), "%Y:%m:%d", UTCTimestamp);
-      addExifTag(EXIFTAGID_GPS_DATESTAMP, EXIF_ASCII,
-                          strlen(gpsDatestamp)+1 , 1, (void *)&gpsDatestamp);
-
-      rat_t time_value[3] = { {UTCTimestamp->tm_hour, 1},
-                              {UTCTimestamp->tm_min, 1},
-                              {UTCTimestamp->tm_sec, 1} };
-
-
-      memcpy(&gpsTimestamp, &time_value, sizeof(gpsTimestamp));
-      addExifTag(EXIFTAGID_GPS_TIMESTAMP, EXIF_RATIONAL,
-                  3, 1, (void *)&gpsTimestamp);
+      mExifValues.mTimeStamp = true;
+      mExifValues.mGPSTimestamp = atol(str);
+    }else{
+         mExifValues.mTimeStamp = false;
     }
-
 }
 
+//latlonString is string formatted coordinate
+//coord is rat_t[3]
+void QualcommCameraHardware::parseGPSCoordinate(const char *latlonString, rat_t* coord)
+{
+    if(coord == NULL) {
+        ALOGE("%s: error, invalid argument coord == NULL", __func__);
+        return;
+    }
+    float degF = fabs(atof(latlonString));
+    float minF = (degF- (int) degF) * 60;
+    float secF = (minF - (int) minF) * 60;
+
+    coord[0] = getRational((int) degF, 1);
+    coord[1] = getRational((int) minF, 1);
+    coord[2] = getRational((int) (secF * 10000), 10000);
+}
 
 bool QualcommCameraHardware::initZslParameter(void)
     {  ALOGV("%s: E", __FUNCTION__);
@@ -2180,29 +2249,6 @@ bool QualcommCameraHardware::initImageEncodeParameters(int size)
         mImageEncodeParms.rotation = rotation;
     }
 
-    jpeg_set_location();
-
-    //set TimeStamp
-    const char *str = mParameters.get(QCameraParameters::KEY_QC_EXIF_DATETIME);
-    if(str != NULL) {
-      strncpy(dateTime, str, 19);
-      dateTime[19] = '\0';
-      addExifTag(EXIFTAGID_EXIF_DATE_TIME_ORIGINAL, EXIF_ASCII,
-                  20, 1, (void *)dateTime);
-    }
-
-    int focalLengthValue = (int) (mParameters.getFloat(
-                QCameraParameters::KEY_FOCAL_LENGTH) * FOCAL_LENGTH_DECIMAL_PRECISON);
-    rat_t focalLengthRational = {focalLengthValue, FOCAL_LENGTH_DECIMAL_PRECISON};
-    memcpy(&focalLength, &focalLengthRational, sizeof(focalLengthRational));
-    addExifTag(EXIFTAGID_FOCAL_LENGTH, EXIF_RATIONAL, 1,
-                1, (void *)&focalLength);
-    //Adding ExifTag for ISOSpeedRating
-    const char *iso_str = mParameters.get(QCameraParameters::KEY_QC_ISO_MODE);
-    int iso_value = attr_lookup(iso, sizeof(iso) / sizeof(str_map), iso_str);
-    isoMode = iso_arr[iso_value];
-    addExifTag(EXIFTAGID_ISO_SPEED_RATING,EXIF_SHORT,1,1,(void *)&isoMode);
-
     if (mUseJpegDownScaling) {
       ALOGV("initImageEncodeParameters: update main image", __func__);
       mImageEncodeParms.output_picture_width = mActualPictWidth;
@@ -2222,8 +2268,10 @@ bool QualcommCameraHardware::initImageEncodeParameters(int size)
         mEncodeOutputBuffer[i].offset = 0;
     }
     mImageEncodeParms.p_output_buffer = mEncodeOutputBuffer;
-    mImageEncodeParms.exif_data = exif_data;
-    mImageEncodeParms.exif_numEntries = exif_table_numEntries;
+
+    initExifData();
+    mImageEncodeParms.exif_data = mExifData;
+    mImageEncodeParms.exif_numEntries = mExifTableNumEntries;
 
     mImageEncodeParms.format3d = mIs3DModeOn;
     return true;
@@ -2254,49 +2302,6 @@ bool QualcommCameraHardware::native_set_parms(
                                        type, length, strerror(errno), status);
    *result = status;
     return false;
-}
-
-void QualcommCameraHardware::jpeg_set_location()
-{
-    bool encode_location = true;
-    camera_position_type pt;
-
-#define PARSE_LOCATION(what,type,fmt,desc) do {                                \
-        pt.what = 0;                                                           \
-        const char *what##_str = mParameters.get("gps-"#what);                 \
-        ALOGV("GPS PARM %s --> [%s]", "gps-"#what, what##_str);                 \
-        if (what##_str) {                                                      \
-            type what = 0;                                                     \
-            if (sscanf(what##_str, fmt, &what) == 1)                           \
-                pt.what = what;                                                \
-            else {                                                             \
-                ALOGE("GPS " #what " %s could not"                              \
-                     " be parsed as a " #desc, what##_str);                    \
-                encode_location = false;                                       \
-            }                                                                  \
-        }                                                                      \
-        else {                                                                 \
-            ALOGV("GPS " #what " not specified: "                               \
-                 "defaulting to zero in EXIF header.");                        \
-            encode_location = false;                                           \
-       }                                                                       \
-    } while(0)
-
-    PARSE_LOCATION(timestamp, long, "%ld", "long");
-    if (!pt.timestamp) pt.timestamp = time(NULL);
-    PARSE_LOCATION(altitude, short, "%hd", "short");
-    PARSE_LOCATION(latitude, double, "%lf", "double float");
-    PARSE_LOCATION(longitude, double, "%lf", "double float");
-
-#undef PARSE_LOCATION
-
-    if (encode_location) {
-        ALOGD("setting image location ALT %d LAT %lf LON %lf",
-             pt.altitude, pt.latitude, pt.longitude);
-
-        setGpsParameters();
-    }
-    else ALOGV("not setting image location");
 }
 
 static bool register_buf(int size,
@@ -4342,8 +4347,6 @@ status_t QualcommCameraHardware::startPreviewInternal()
         return UNKNOWN_ERROR;
     }
 
-    //Reset the Gps Information
-    exif_table_numEntries = 0;
     previewWidthToNativeZoom = previewWidth;
     previewHeightToNativeZoom = previewHeight;
 
@@ -4891,30 +4894,9 @@ status_t QualcommCameraHardware::takePicture()
             mZslFlashEnable = true;
         }
     }
-    //Adding ExifTag for Flash
-    const char *flash_str = mParameters.get(QCameraParameters::KEY_FLASH_MODE);
-    if(flash_str){
-        int is_flash_fired = 0;
-        if(mCfgControl.mm_camera_get_parm(CAMERA_PARM_QUERY_FALSH4SNAP,
-                      (void *)&is_flash_fired) != MM_CAMERA_SUCCESS){
-            flashMode = FLASH_SNAP ; //for No Flash support,bit 5 will be 1
-        } else {
-            if(!strcmp(flash_str,"on"))
-                flashMode = 1;
 
-            if(!strcmp(flash_str,"off"))
-                flashMode = 0;
-
-            if(!strcmp(flash_str,"auto")){
-                //for AUTO bits 3 and 4 will be 1
-                //for flash fired bit 0 will be 1, else 0
-                flashMode  = FLASH_AUTO;
-                if(is_flash_fired)
-                   flashMode = (is_flash_fired>>1) | flashMode ;
-            }
-        }
-        addExifTag(EXIFTAGID_FLASH,EXIF_SHORT,1,1,(void *)&flashMode);
-    }
+    //Update Exiftag values.
+    setExifTags();
 
     if(mParameters.getPictureFormat() != 0 &&
             !strcmp(mParameters.getPictureFormat(),
@@ -4994,20 +4976,6 @@ status_t QualcommCameraHardware::takePicture()
     return mSnapshotThreadRunning ? NO_ERROR : UNKNOWN_ERROR;
 }
 
-void QualcommCameraHardware::set_liveshot_exifinfo()
-{
-
-    setGpsParameters();
-    //set TimeStamp
-    const char *str = mParameters.get(QCameraParameters::KEY_QC_EXIF_DATETIME);
-    if(str != NULL) {
-        strncpy(dateTime, str, 19);
-        dateTime[19] = '\0';
-        addExifTag(EXIFTAGID_EXIF_DATE_TIME_ORIGINAL, EXIF_ASCII,
-                   20, 1, (void *)dateTime);
-    }
-}
-
 
 status_t QualcommCameraHardware::takeLiveSnapshotInternal()
 {
@@ -5030,9 +4998,12 @@ status_t QualcommCameraHardware::takeLiveSnapshotInternal()
         return UNKNOWN_ERROR;
     }
     uint32_t maxjpegsize = videoWidth * videoHeight *1.5;
-    set_liveshot_exifinfo();
+
+    initExifData();
+    //Update Exiftag values.
+    setExifTags();
     if(!LINK_set_liveshot_params(videoWidth, videoHeight,
-                                exif_data, exif_table_numEntries,
+                                mExifData, mExifTableNumEntries,
       (uint8_t *)mJpegLiveSnapMapped->data, maxjpegsize)) {
         ALOGE("Link_set_liveshot_params failed.");
         if (NULL != mJpegLiveSnapMapped) {
@@ -5131,6 +5102,7 @@ status_t QualcommCameraHardware::setParameters(const QCameraParameters& params)
         if ((rc = setPictureSize(params)))  final_rc = rc;
         if ((rc = setJpegThumbnailSize(params))) final_rc = rc;
         if ((rc = setJpegQuality(params)))  final_rc = rc;
+
         return final_rc;
     }
     if ((rc = setCameraMode(params)))  final_rc = rc;
@@ -5486,8 +5458,7 @@ void QualcommCameraHardware::receiveLiveSnapshot(uint32_t jpeg_size)
     }
     else ALOGV("JPEG callback was cancelled--not delivering image.");
 
-    //Reset the Gps Information & relieve memory
-    exif_table_numEntries = 0;
+    deinitExifData();
 
     liveshot_state = LIVESHOT_DONE;
 
@@ -6332,6 +6303,8 @@ void QualcommCameraHardware::receiveJpegPicture(status_t status, mm_camera_buffe
       }
     }
 
+    deinitExifData();
+
     ALOGV("receiveJpegPicture: X callback done.");
 }
 bool QualcommCameraHardware::previewEnabled()
@@ -6595,6 +6568,14 @@ status_t QualcommCameraHardware::setPictureSize(const QCameraParameters& params)
     } else
         ALOGE("Invalid picture size requested: %dx%d", width, height);
     return BAD_VALUE;
+}
+
+int QualcommCameraHardware::getISOSpeedValue()
+{
+    const char *iso_str = mParameters.get(QCameraParameters::KEY_QC_ISO_MODE);
+    int iso_index = attr_lookup(iso, sizeof(iso) / sizeof(str_map), iso_str);
+    int iso_value = iso_speed_values[iso_index];
+    return iso_value;
 }
 
 status_t QualcommCameraHardware::setJpegQuality(const QCameraParameters& params) {

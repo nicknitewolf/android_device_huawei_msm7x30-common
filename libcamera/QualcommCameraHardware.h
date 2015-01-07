@@ -81,6 +81,42 @@ struct board_property{
     bool hasFaceDetect;
 };
 
+//EXIF globals
+static const char ExifAsciiPrefix[] = { 0x41, 0x53, 0x43, 0x49, 0x49, 0x0, 0x0, 0x0 };          // "ASCII\0\0\0"
+static const char ExifUndefinedPrefix[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };   // "\0\0\0\0\0\0\0\0"
+
+//EXIF detfines
+#define MAX_EXIF_TABLE_ENTRIES           14
+#define GPS_PROCESSING_METHOD_SIZE       101
+#define FOCAL_LENGTH_DECIMAL_PRECISION   100
+#define EXIF_ASCII_PREFIX_SIZE           8   //(sizeof(ExifAsciiPrefix))
+
+typedef struct{
+    //GPS tags
+    rat_t       latitude[3];
+    rat_t       longitude[3];
+    char        lonRef[2];
+    char        latRef[2];
+    rat_t       altitude;
+    rat_t       gpsTimeStamp[3];
+    char        gpsDateStamp[20];
+    char        gpsProcessingMethod[EXIF_ASCII_PREFIX_SIZE+GPS_PROCESSING_METHOD_SIZE];
+    //Other tags
+    char        dateTime[20];
+    rat_t       focalLength;
+    uint16_t    flashMode;
+    uint16_t    isoSpeed;
+
+    bool        mAltitude;
+    bool        mLongitude;
+    bool        mLatitude;
+    bool        mTimeStamp;
+    bool        mGpsProcess;
+
+    int         mAltitude_ref;
+    long        mGPSTimestamp;
+} exif_values_t;
+
 namespace android {
 
 class QualcommCameraHardware : public RefBase{
@@ -108,7 +144,6 @@ public:
     virtual status_t takePicture();
     virtual status_t takeLiveSnapshot();
     virtual status_t takeLiveSnapshotInternal();
-    void set_liveshot_exifinfo();
     virtual status_t cancelPicture();
     virtual status_t setParameters(const QCameraParameters& params);
     virtual QCameraParameters getParameters() const;
@@ -129,7 +164,6 @@ public:
     void receiveCameraStats(camstats_type stype, camera_preview_histogram_info* histinfo);
     void receiveRecordingFrame(struct msm_frame *frame);
     void receiveJpegPicture(status_t status, mm_camera_buffer_t *encoded_buffer);
-    void jpeg_set_location();
     void notifyShutter(bool mPlayShutterSoundOnly);
     void receive_camframe_error_timeout();
     static void getCameraInfo();
@@ -322,6 +356,7 @@ private:
     status_t setPreviewFrameRateMode(const QCameraParameters& params);
     status_t setRecordSize(const QCameraParameters& params);
     status_t setPictureSize(const QCameraParameters& params);
+    int getISOSpeedValue();
     status_t setJpegQuality(const QCameraParameters& params);
     status_t setAntibanding(const QCameraParameters& params);
     status_t setEffect(const QCameraParameters& params);
@@ -484,6 +519,20 @@ private:
     bool mMultiTouch;
 
     int mRecordingState;
+
+    //EXIF
+    void addExifTag(exif_tag_id_t tagid, exif_tag_type_t type,
+        uint32_t count, uint8_t copy, void *data);
+    void setExifTags();
+    void initExifData();
+    void deinitExifData();
+    void setExifTagsGPS();
+    exif_tags_info_t* getExifData() { return mExifData; }
+    int getExifTableNumEntries() { return mExifTableNumEntries; }
+    void parseGPSCoordinate(const char *latlonString, rat_t* coord);
+    exif_tags_info_t    mExifData[MAX_EXIF_TABLE_ENTRIES];  //Exif tags for JPEG encoder
+    exif_values_t       mExifValues;                        //Exif values in usable format
+    int                 mExifTableNumEntries;               //Number of entries in mExifData
 };
 
 extern "C" int HAL_getNumberOfCameras();
