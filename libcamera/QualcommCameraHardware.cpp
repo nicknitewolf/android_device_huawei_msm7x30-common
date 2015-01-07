@@ -1974,6 +1974,8 @@ void QualcommCameraHardware::initExifData(){
     addExifTag(EXIFTAGID_FOCAL_LENGTH, EXIF_RATIONAL, 1, 1, (void *)&(mExifValues.focalLength));
     addExifTag(EXIFTAGID_FLASH,EXIF_SHORT,1,1,(void *)&(mExifValues.flashMode));
     addExifTag(EXIFTAGID_ISO_SPEED_RATING,EXIF_SHORT,1,1,(void *)&(mExifValues.isoSpeed));
+    addExifTag(EXIFTAGID_MAKE, EXIF_ASCII, 17, 1, (void *)mExifValues.make);
+    addExifTag(EXIFTAGID_MODEL, EXIF_ASCII, 17, 1, (void *)mExifValues.model);
 
     if(mExifValues.mGpsProcess) {
         addExifTag(EXIFTAGID_GPS_PROCESSINGMETHOD, EXIF_ASCII,
@@ -2071,6 +2073,18 @@ void QualcommCameraHardware::setExifTags()
 
     //Set ISO Speed
     mExifValues.isoSpeed = getISOSpeedValue();
+
+    //Set make
+    char manufacturer[PROPERTY_VALUE_MAX];
+    property_get("ro.product.manufacturer", manufacturer, "QCOM-AA");
+    strncpy(mExifValues.make, manufacturer, 16);
+    mExifValues.make[16] = '\0';
+
+    //Set model
+    char model[PROPERTY_VALUE_MAX];
+    property_get("ro.product.model", model, "QCAM-AA");
+    strncpy(mExifValues.model, model, 16);
+    mExifValues.model[16] = '\0';
 
     //get time and date from system
     time_t rawtime;
