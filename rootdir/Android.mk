@@ -24,6 +24,32 @@ LOCAL_MODULE_PATH := $(TARGET_ROOT_OUT)
 include $(BUILD_PREBUILT)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE := fstab.qcom.lvm
+LOCAL_SRC_FILES := $(LOCAL_MODULE)
+LOCAL_MODULE_CLASS := ETC
+LOCAL_MODULE_PATH := $(TARGET_ROOT_OUT)
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := init.fs.sh
+LOCAL_SRC_FILES := $(LOCAL_MODULE)
+LOCAL_MODULE_CLASS := EXECUTABLES
+LOCAL_REQUIRED_MODULES := static_busybox
+LOCAL_MODULE_PATH := $(TARGET_ROOT_OUT)
+include $(BUILD_PREBUILT)
+
+copy_busybox := $(TARGET_ROOT_OUT_SBIN)/static/busybox
+$(copy_busybox): $(LOCAL_INSTALLED_MODULE) $(LOCAL_PATH)/Android.mk
+	@mkdir -p $(TARGET_ROOT_OUT_SBIN)/static/
+	@cp $(PRODUCT_OUT)/utilities/busybox $(TARGET_ROOT_OUT_SBIN)/static/busybox
+
+# We need this so that the installed files could be picked up based on the
+# local module name
+ALL_MODULES.$(LOCAL_MODULE).INSTALLED := \
+    $(ALL_MODULES.$(LOCAL_MODULE).INSTALLED) $(copy_busybox)
+ALL_DEFAULT_INSTALLED_MODULES += $(copy_busybox)
+
+include $(CLEAR_VARS)
 LOCAL_MODULE := init.qcom.rc
 LOCAL_SRC_FILES := $(LOCAL_MODULE)
 LOCAL_MODULE_CLASS := ETC
