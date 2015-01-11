@@ -1,51 +1,29 @@
-/*
-** Copyright (c) 2011 Code Aurora Forum. All rights reserved.
-**
-** Licensed under the Apache License, Version 2.0 (the "License");
-** you may not use this file except in compliance with the License.
-** You may obtain a copy of the License at
-**
-**     http://www.apache.org/licenses/LICENSE-2.0
-**
-** Unless required by applicable law or agreed to in writing, software
-** distributed under the License is distributed on an "AS IS" BASIS,
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-** See the License for the specific language governing permissions and
-** limitations under the License.
-*/
-
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
 
+#include <qexif.h>
+#include <stdint.h>
 #include <media/msm_camera.h>
+#include <pthread.h>
+#include <linux/videodev2.h>
+#include <sys/mman.h>
 
-#define MSM_CAMERA_CONTROL "/dev/msm_camera/control%d"
-#define MSM_CAMERA_CONFIG  "/dev/msm_camera/config%d"
-#define MSM_CAMERA_FRAME   "/dev/msm_camera/frame%d"
-#define MSM_CAMERA_SERVER  "/dev/msm_camera/video_msm"
+#ifdef _ANDROID_
+  #define MSM_CAMERA_CONTROL "/dev/msm_camera/control%d"
+  #define MSM_CAMERA_CONFIG  "/dev/msm_camera/config%d"
+  #define MSM_CAMERA_FRAME   "/dev/msm_camera/frame%d"
+  #define MSM_CAMERA_SERVER  "/dev/msm_camera/video_msm"
+#else
+  #define MSM_CAMERA_CONTROL "/dev/control%d"
+  #define MSM_CAMERA_CONFIG  "/dev/config%d"
+  #define MSM_CAMERA_FRAME   "/dev/frame%d"
+#endif
 
 #define TRUE (1)
 #define FALSE (0)
 
 #define JPEG_EVENT_DONE      0
 #define JPEG_EVENT_THUMBNAIL_DROPPED 4
-
-#define EXIFTAGID_GPS_LATITUDE_REF          0x10001
-#define EXIFTAGID_GPS_LATITUDE              0x20002
-#define EXIFTAGID_GPS_LONGITUDE_REF         0x30003
-#define EXIFTAGID_GPS_LONGITUDE             0x40004
-#define EXIFTAGID_GPS_ALTITUDE_REF          0x50005
-#define EXIFTAGID_GPS_ALTITUDE              0x60006
-#define EXIFTAGID_GPS_TIMESTAMP             0x70007
-#define EXIFTAGID_GPS_PROCESSINGMETHOD      0x1b001b
-#define EXIFTAGID_GPS_DATESTAMP             0x1d001d
-#define EXIFTAGID_MAKER                     0x2c010f
-#define EXIFTAGID_MODEL                     0x2d0110
-#define EXIFTAGID_ISO_SPEED_RATING          0x908827
-#define EXIFTAGID_EXIF_DATE_TIME_ORIGINAL   0x939003
-#define EXIFTAGID_EXIF_DATE_TIME_CREATED    0x949004
-#define EXIFTAGID_FLASH                     0x9d9209
-#define EXIFTAGID_FOCAL_LENGTH              0xa0920a
 
 struct jpeg_buf_t;
 typedef struct jpeg_buf_t * jpeg_buffer_t;
@@ -55,13 +33,12 @@ typedef uint32_t  jpeg_event_t;
 struct jpeg_encoder_t;
 typedef struct jpeg_encoder_t *jpege_obj_t;
 
-struct exif_info_t;
-typedef struct exif_info_t * exif_info_obj_t;
-
 #define MAX_FRAGMENTS  8
 
 #define JPEGERR_SUCCESS              0
 #define JPEGERR_EFAILED              1
+
+#define PAD_TO_2K(a)                 (((a)+2047)&~2047)
 
 typedef enum
 {
@@ -203,59 +180,6 @@ typedef struct
 } jpege_cfg_t;
 
 
-typedef uint32_t exif_tag_id_t;
-
-typedef enum {
-    EXIF_BYTE      = 1,
-    EXIF_ASCII     = 2,
-    EXIF_SHORT     = 3,
-    EXIF_LONG      = 4,
-    EXIF_RATIONAL  = 5,
-    EXIF_UNDEFINED = 7,
-    EXIF_SLONG     = 9,
-    EXIF_SRATIONAL = 10
-} exif_tag_type_t;
-
-typedef struct {
-    uint32_t  num;
-    uint32_t  denom;
-} rat_t;
-
-typedef struct {
-    int32_t  num;
-    int32_t  denom;
-
-} srat_t;
-
-typedef struct {
-    exif_tag_type_t type;
-    uint8_t copy;
-    uint32_t count;
-    union {
-        char      *_ascii;
-        uint8_t   *_bytes;
-        uint8_t    _byte;
-        uint16_t  *_shorts;
-        uint16_t   _short;
-        uint32_t  *_longs;
-        uint32_t   _long;
-        rat_t     *_rats;
-        rat_t      _rat;
-        uint8_t   *_undefined;
-        int32_t   *_slongs;
-        int32_t    _slong;
-        srat_t    *_srats;
-        srat_t     _srat;
-    } data;
-
-} exif_tag_entry_t;
-
-
-typedef struct {
-    uint32_t      tag_id;
-    exif_tag_entry_t  tag_entry;
-} exif_tags_info_t;
-
 typedef struct {
   int ext_mode;
   int frame_idx;
@@ -281,7 +205,6 @@ typedef struct {
 
 #define PAD_TO_WORD(a)               (((a)+3)&~3)
 #define PAD_TO_4K(a)                 (((a)+4095)&~4095)
-#define PAD_TO_2K(a)                 (((a)+2047)&~2047)
 
 #define CEILING32(X) (((X) + 0x0001F) & 0xFFFFFFE0)
 #define CEILING16(X) (((X) + 0x000F) & 0xFFF0)
@@ -409,7 +332,7 @@ typedef struct {
   int8_t camera_id;
   cam_position_t position;
   uint32_t sensor_mount_angle;
-}mm_camera_info_t;
+}cam_info_t;
 
 typedef struct {
   camera_mode_t mode;
@@ -576,7 +499,7 @@ typedef enum {
   CAMERA_PARM_AEC_LOCK,
   CAMERA_PARM_AWB_LOCK,
   CAMERA_PARM_RECORDING_HINT
-} mm_camera_parm_type_t;
+} camera_parm_type_t;
 
 
 typedef struct {
@@ -601,10 +524,13 @@ typedef enum {
   CAMERA_BVCM_OFFLINE_CAPTURE
 } camera_bvcm_capture_type;
 
+#ifndef HAVE_CAMERA_SIZE_TYPE
+  #define HAVE_CAMERA_SIZE_TYPE
 struct camera_size_type {
   int width;
   int height;
 };
+#endif
 
 typedef enum {
   CAMERA_SP_NORMAL = 0,
@@ -786,23 +712,6 @@ typedef enum {
   TIFF_DATA_SRATIONAL = 10
 } tiff_data_type;
 
-typedef enum {
-  ZERO_IFD = 0, /* This must match AEECamera.h */
-  FIRST_IFD,
-  EXIF_IFD,
-  GPS_IFD,
-  INTEROP_IFD,
-  DEFAULT_IFD
-} camera_ifd_type;
-
-typedef struct {
-  uint16_t tag_id;
-  camera_ifd_type ifd;
-  tiff_data_type type;
-  uint16_t count;
-  void     *value;
-} camera_exif_tag_type;
-
 typedef struct {
   /* What is the ID for this sensor */
   uint16_t sensor_id;
@@ -902,7 +811,7 @@ typedef enum {
   AF_MODE_MACRO,
   AF_MODE_AUTO,
   AF_MODE_CAF,
-  AF_MODE_CAF_VID,
+//  AF_MODE_CAF_VID,
   AF_MODE_MAX
 } isp3a_af_mode_t;
 
@@ -1623,22 +1532,22 @@ typedef struct {
 
 typedef struct {
   /* used for querying the tables from mm_camera*/
-  mm_camera_status_t (*mm_camera_query_parms) (mm_camera_parm_type_t parm_type,
+  mm_camera_status_t (*mm_camera_query_parms) (camera_parm_type_t parm_type,
     void** pp_values, uint32_t* p_count);
 
   /* set a parm<92>s current value */
-  mm_camera_status_t (*mm_camera_set_parm) (mm_camera_parm_type_t parm_type,
+  mm_camera_status_t (*mm_camera_set_parm) (camera_parm_type_t parm_type,
     void* p_value);
 
   /* get a parm<92>s current value */
-  mm_camera_status_t(*mm_camera_get_parm) (mm_camera_parm_type_t parm_type,
+  mm_camera_status_t(*mm_camera_get_parm) (camera_parm_type_t parm_type,
     void* p_value);
 
   /* check if the parm is supported */
-  int8_t (*mm_camera_is_supported) (mm_camera_parm_type_t parm_type);
+  int8_t (*mm_camera_is_supported) (camera_parm_type_t parm_type);
 
   /* check if the sub parm is supported */
-  int8_t (*mm_camera_is_parm_supported) (mm_camera_parm_type_t parm_type,
+  int8_t (*mm_camera_is_parm_supported) (camera_parm_type_t parm_type,
    void* sub_parm);
 
 }mm_camera_config;

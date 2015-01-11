@@ -54,6 +54,8 @@ on fs
     exec /sbin/lvm vgscan --mknodes --ignorelockingfailure
     # Activate LVM logical volumes in found volume groups
     exec /sbin/lvm vgchange -aly --ignorelockingfailure
+    # Set up partitions
+    exec /sbin/static/busybox sh /init.fs.sh
 
     mkdir /cust
     mount_all ./fstab.qcom

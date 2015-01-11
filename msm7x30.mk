@@ -89,6 +89,8 @@ PRODUCT_PACKAGES += \
 	hostapd \
 	hwprops \
 	fstab.qcom \
+	fstab.qcom.lvm \
+	init.fs.sh \
 	init.qcom.rc \
 	init.qcom.usb.rc \
 	twrp.fstab \
@@ -100,9 +102,7 @@ PRODUCT_PACKAGES += \
 	wpa_supplicant.conf \
 	wpa_supplicant_overlay.conf \
 	lvm \
-	lvm_recovery \
-	lvm.conf \
-	lvm.conf_recovery
+	lvm.conf
 
 # Recovery init script
 PRODUCT_COPY_FILES += \

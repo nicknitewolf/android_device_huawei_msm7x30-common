@@ -1,6 +1,6 @@
 /*
 ** Copyright (c) 2011 The Linux Foundation. All rights reserved.
-** Copyright (C) 2014 Rudolf Tammekivi <rtammekivi@gmail.com>
+** Copyright (C) 2015 Rudolf Tammekivi <rtammekivi@gmail.com>
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
 
 #include "QualcommCamera.h"
 #include "QualcommCameraHardware.h"
+
+using namespace android;
 
 static hw_module_methods_t camera_module_methods = {
 	.open = qcamera_open,
