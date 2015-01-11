@@ -35,3 +35,12 @@ on boot
     mkdir /cust
 
 service rmt_storage /sbin/rmt_storage
+
+service charger /sbin/healthd -c
+    class charger
+    critical
+    seclabel u:r:healthd:s0
+
+on charger
+    start rmt_storage
+    class_start charger

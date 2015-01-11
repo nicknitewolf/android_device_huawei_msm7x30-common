@@ -85,6 +85,7 @@ PRODUCT_PACKAGES += \
 
 # Common packages
 PRODUCT_PACKAGES += \
+	charger_res_images \
 	HuaweiSettings \
 	hostapd \
 	hwprops \
