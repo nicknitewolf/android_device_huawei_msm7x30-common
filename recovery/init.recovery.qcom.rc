@@ -14,6 +14,10 @@
 # limitations under the License.
 #
 
+on init
+    # Disable framebuffer alignment
+    write /sys/module/msm_fb/parameters/align_buffer 0
+
 on fs
     # Scan for LVM physical volumes and set up volume groups
     exec /sbin/lvm vgscan --mknodes --ignorelockingfailure
@@ -23,9 +27,6 @@ on fs
     exec /sbin/static/busybox sh /init.fs.sh
 
 on boot
-    # Disable framebuffer alignment
-    write /sys/module/msm_fb/parameters/align_buffer 0
-
     # Set brightness for LCD and buttons
     write /sys/class/leds/lcd-backlight/brightness 127
     write /sys/class/leds/button-backlight/brightness 127
@@ -34,3 +35,12 @@ on boot
     mkdir /cust
 
 service rmt_storage /sbin/rmt_storage
+
+service charger /sbin/healthd -c
+    class charger
+    critical
+    seclabel u:r:healthd:s0
+
+on charger
+    start rmt_storage
+    class_start charger
