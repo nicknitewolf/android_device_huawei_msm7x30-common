@@ -25,6 +25,8 @@ DEVICE_PACKAGE_OVERLAYS += device/huawei/msm7x30-common/overlay
 PRODUCT_AAPT_CONFIG := normal hdpi
 PRODUCT_AAPT_PREF_CONFIG := hdpi
 
+PRODUCT_BOOT_JARS += qcmediaplayer
+
 # Common hardware-specific features
 PRODUCT_COPY_FILES += \
 	frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml \
@@ -99,6 +101,7 @@ PRODUCT_PACKAGES += \
 	audio_policy.conf \
 	media_codecs.xml \
 	media_profiles.xml \
+	qcmediaplayer \
 	wpa_supplicant \
 	wpa_supplicant.conf \
 	wpa_supplicant_overlay.conf \
@@ -129,19 +132,19 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
-	lpa.decode=false \
 	ro.hs_intmic.supported=1 \
-	audio.gapless.playback.disable=true \
-	media.stagefright.use-awesome=true
+	audio.offload.disable=1 \
+	persist.sys.media.use-awesome=true
 
 # Graphics properties
 PRODUCT_PROPERTY_OVERRIDES += \
 	debug.sf.hw=1 \
 	debug.egl.hw=1 \
-	debug.composition.type=dyn \
+	debug.composition.type=mdp \
 	persist.hwc.mdpcomp.enable=true \
 	debug.mdpcomp.maxlayer=3 \
-	debug.mdpcomp.idletime=-1
+	debug.mdpcomp.idletime=-1 \
+	persist.sys.force_highendgfx=true
 
 # Include proprietary stuff
 $(call inherit-product, vendor/huawei/msm7x30-common/msm7x30-common-vendor.mk)
