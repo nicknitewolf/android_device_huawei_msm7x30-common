@@ -143,7 +143,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	debug.composition.type=mdp \
 	persist.hwc.mdpcomp.enable=true \
 	debug.mdpcomp.maxlayer=3 \
-	debug.mdpcomp.idletime=-1
+	debug.mdpcomp.idletime=-1 \
+	persist.sys.force_highendgfx=true
 
 # Include proprietary stuff
 $(call inherit-product, vendor/huawei/msm7x30-common/msm7x30-common-vendor.mk)
