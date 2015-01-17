@@ -131,10 +131,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
-	lpa.decode=false \
 	ro.hs_intmic.supported=1 \
-	audio.gapless.playback.disable=true \
-	media.stagefright.use-awesome=true
+	audio.offload.disable=1 \
+	persist.sys.media.use-awesome=true
 
 # Graphics properties
 PRODUCT_PROPERTY_OVERRIDES += \
