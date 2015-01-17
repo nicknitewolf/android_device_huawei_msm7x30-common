@@ -131,7 +131,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
-	ro.hs_intmic.supported=1 \
 	audio.offload.disable=1 \
 	persist.sys.media.use-awesome=true
 
