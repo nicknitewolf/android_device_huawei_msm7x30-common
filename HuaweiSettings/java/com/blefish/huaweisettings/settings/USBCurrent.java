@@ -1,5 +1,6 @@
 package com.blefish.huaweisettings.settings;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.File;
@@ -11,7 +12,7 @@ public class USBCurrent implements Setting {
     private static final String USB_CURRENT_PATH = "/sys/devices/platform/msm_otg/manual_chg";
 
     @Override
-    public boolean isSupported() {
+    public boolean isSupported(Context context) {
         File file = new File(USB_CURRENT_PATH);
         return file.exists();
     }

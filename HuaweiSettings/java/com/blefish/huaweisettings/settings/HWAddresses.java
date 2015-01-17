@@ -1,5 +1,7 @@
 package com.blefish.huaweisettings.settings;
 
+import android.content.Context;
+
 import java.io.File;
 
 /**
@@ -10,7 +12,7 @@ public class HWAddresses implements Setting {
     private static final String HWADDR_RESET_SYFS_PATH = "/sys/hwprops/reset";
 
     @Override
-    public boolean isSupported() {
+    public boolean isSupported(Context context) {
         File file = new File(HWADDR_RESET_SYFS_PATH);
         File directory = new File(HWADDR_DATA_PATH);
         return file.exists() && directory.isDirectory();

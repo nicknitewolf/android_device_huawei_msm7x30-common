@@ -1,5 +1,6 @@
 package com.blefish.huaweisettings.settings;
 
+import android.content.Context;
 import android.os.SystemProperties;
 
 /**
@@ -9,7 +10,7 @@ public class Microphone implements Setting {
     private static final String FORCE_MIC_ENABLE_PROP = "persist.service.audio.hs_intmic";
 
     @Override
-    public boolean isSupported() {
+    public boolean isSupported(Context context) {
         return true;
     }
 

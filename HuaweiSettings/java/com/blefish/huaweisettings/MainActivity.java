@@ -12,6 +12,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 
 import com.blefish.huaweisettings.settings.BTMac;
@@ -102,17 +103,17 @@ public class MainActivity extends PreferenceActivity {
         bindPreferenceSummaryToValue(findPreference(PREF_HWADDR_BT));
         bindPreferenceSummaryToValue(findPreference(PREF_HWADDR_WLAN));
 
-        findPreference(PREF_GENERAL_FORCE_MIC_KEY).setEnabled(microphone.isSupported());
-        findPreference(PREF_GENERAL_BT_POWER_KEY).setEnabled(btPower.isSupported());
-        findPreference(PREF_USB_HOST_KEY).setEnabled(usbHost.isSupported());
-        findPreference(PREF_USB_CURRENT_KEY).setEnabled(usbCurrent.isSupported());
-        findPreference(PREF_SENSORS_MAGNETOMETER).setEnabled(magCalibration.isSupported());
+        findPreference(PREF_GENERAL_FORCE_MIC_KEY).setEnabled(microphone.isSupported(this));
+        findPreference(PREF_GENERAL_BT_POWER_KEY).setEnabled(btPower.isSupported(this));
+        findPreference(PREF_USB_HOST_KEY).setEnabled(usbHost.isSupported(this));
+        findPreference(PREF_USB_CURRENT_KEY).setEnabled(usbCurrent.isSupported(this));
+        findPreference(PREF_SENSORS_MAGNETOMETER).setEnabled(magCalibration.isSupported(this));
 
-        Boolean hwAddrEnabled = hwAddresses.isSupported();
+        Boolean hwAddrEnabled = hwAddresses.isSupported(this);
         findPreference(PREF_HWADDR_CUSTOM).setEnabled(hwAddrEnabled);
         Boolean hwAddrValue = sharedPreferences.getBoolean(PREF_HWADDR_CUSTOM, false);
-        findPreference(PREF_HWADDR_BT).setEnabled(hwAddrValue && btMac.isSupported());
-        findPreference(PREF_HWADDR_WLAN).setEnabled(hwAddrValue && wlanMac.isSupported());
+        findPreference(PREF_HWADDR_BT).setEnabled(hwAddrValue && btMac.isSupported(this));
+        findPreference(PREF_HWADDR_WLAN).setEnabled(hwAddrValue && wlanMac.isSupported(this));
 
         if (!hwAddrValue) {
             EditTextPreference btPreference = (EditTextPreference)findPreference(PREF_HWADDR_BT);
@@ -123,6 +124,7 @@ public class MainActivity extends PreferenceActivity {
             wlanPreference.setSummary(wlanPreference.getText());
         }
 
+        findPreference(PREF_SENSORS_MAGNETOMETER).setOnPreferenceClickListener(sOnPreferenceClickListener);
         sharedPreferences.registerOnSharedPreferenceChangeListener(sOnSharedPreferenceChangeListener);
     }
 
@@ -186,15 +188,28 @@ public class MainActivity extends PreferenceActivity {
         }
     };
 
+    private Preference.OnPreferenceClickListener sOnPreferenceClickListener = new Preference.OnPreferenceClickListener() {
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            if (preference.getKey().equals(PREF_SENSORS_MAGNETOMETER)) {
+                magCalibration.writeValue("");
+                findPreference(PREF_SENSORS_MAGNETOMETER).setEnabled(false);
+            }
+            return true;
+        }
+    };
+
     private SharedPreferences.OnSharedPreferenceChangeListener sOnSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if (key.equals(PREF_GENERAL_FORCE_MIC_KEY)) {
                 Boolean value = sharedPreferences.getBoolean(PREF_GENERAL_FORCE_MIC_KEY, false);
                 microphone.writeValue(value.toString());
+                showToast(getString(R.string.toast_replug_headset));
             } else if (key.equals(PREF_GENERAL_BT_POWER_KEY)) {
                 String value = sharedPreferences.getString(PREF_GENERAL_BT_POWER_KEY, "0");
                 btPower.writeValue(value.toString());
+                showToast(getString(R.string.toast_restart_bluetooth));
             } else if (key.equals(PREF_USB_HOST_KEY)) {
                 Boolean value = sharedPreferences.getBoolean(PREF_USB_HOST_KEY, false);
                 usbHost.writeValue(value.toString());
@@ -219,9 +234,11 @@ public class MainActivity extends PreferenceActivity {
             } else if (key.equals(PREF_HWADDR_BT)) {
                 String value = sharedPreferences.getString(PREF_HWADDR_BT, "00:11:22:33:44:55");
                 btMac.writeValue(value);
+                showToast(getString(R.string.toast_restart_bluetooth));
             } else if (key.equals(PREF_HWADDR_WLAN)) {
                 String value = sharedPreferences.getString(PREF_HWADDR_WLAN, "00:11:22:33:44:55");
                 wlanMac.writeValue(value);
+                showToast(getString(R.string.toast_restart_wifi));
             }
         }
     };
@@ -245,5 +262,9 @@ public class MainActivity extends PreferenceActivity {
                 PreferenceManager
                         .getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
+    }
+
+    private void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 }

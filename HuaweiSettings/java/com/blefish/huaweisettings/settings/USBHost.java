@@ -1,5 +1,6 @@
 package com.blefish.huaweisettings.settings;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.File;
@@ -13,7 +14,7 @@ public class USBHost implements Setting {
     private static final Integer USB_HOST_OFF_STATE = 0;
 
     @Override
-    public boolean isSupported() {
+    public boolean isSupported(Context context) {
         File file = new File(USB_HOST_PATH);
         return file.exists();
     }
