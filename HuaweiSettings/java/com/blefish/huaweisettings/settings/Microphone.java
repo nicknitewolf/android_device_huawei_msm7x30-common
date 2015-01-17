@@ -6,12 +6,11 @@ import android.os.SystemProperties;
  * Created by rudolf on 12/26/14.
  */
 public class Microphone implements Setting {
-    private static final String FORCE_MIC_SUPPORTED_PROP = "ro.hs_intmic.supported";
     private static final String FORCE_MIC_ENABLE_PROP = "persist.service.audio.hs_intmic";
 
     @Override
     public boolean isSupported() {
-        return SystemProperties.getBoolean(FORCE_MIC_SUPPORTED_PROP, false);
+        return true;
     }
 
     @Override
