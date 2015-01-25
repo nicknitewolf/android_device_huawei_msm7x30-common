@@ -80,6 +80,7 @@ TARGET_RELEASETOOLS_EXTENSIONS := device/huawei/msm7x30-common
 TARGET_NEEDS_NON_PIE_SUPPORT := true
 TARGET_DISABLE_ARM_PIE := true
 MALLOC_IMPL := dlmalloc
+TARGET_CONTINUOUS_SPLASH_ENABLED := true
 
 # Enable dex-preoptimization to speed up first boot sequence
 ifeq ($(HOST_OS),linux)
