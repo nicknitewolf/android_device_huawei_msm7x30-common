@@ -4,7 +4,6 @@
     <string name="pref_general_title">General</string>
     <string name="pref_general_force_mic_title">Force microphone</string>
     <string name="pref_general_force_mic_summary">Always use phone\'s microphone</string>
-    <string name="pref_general_force_mic_toast">Please replug headset</string>
 
     <string name="pref_general_bt_power_title">Bluetooth power</string>
     <string-array name="pref_general_bt_power_entries">
@@ -12,7 +11,6 @@
         <item>Normal (Power Class 2)</item>
         <item>High (Power Class 1)</item>
     </string-array>
-    <string name="pref_general_bt_power_toast">Please restart bluetooth</string>
 
 
     <string name="pref_usb_title">USB</string>
@@ -42,4 +40,10 @@
     <string name="pref_hwaddr_custom_summary">Use custom BT/WLAN MAC address</string>
     <string name="pref_hwaddr_bt_title">Bluetooth MAC Address</string>
     <string name="pref_hwaddr_wlan_title">Wi-Fi MAC Address</string>
+
+    <!-- Toasts -->
+    <string name="toast_replug_headset">Please replug headset</string>
+    <string name="toast_removed_calibration">Magnetic calibration removed</string>
+    <string name="toast_restart_bluetooth">Please restart Bluetooth</string>
+    <string name="toast_restart_wifi">Please restart Wi-Fi</string>
 </resources>

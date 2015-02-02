@@ -1,5 +1,7 @@
 package com.blefish.huaweisettings.settings;
 
+import android.content.Context;
+
 import java.io.File;
 
 /**
@@ -9,7 +11,7 @@ public class MagCalibration implements Setting {
     private static final String MAG_CALIBRATION_PATH = "/data/misc/sensors/lsm303dlh_mag";
 
     @Override
-    public boolean isSupported() {
+    public boolean isSupported(Context context) {
         File file = new File(MAG_CALIBRATION_PATH);
         return file.exists();
     }

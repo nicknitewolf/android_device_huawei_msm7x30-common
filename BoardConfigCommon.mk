@@ -37,6 +37,8 @@ BOARD_EGL_CFG := device/huawei/msm7x30-common/egl.cfg
 
 # Audio
 BOARD_USES_LEGACY_ALSA_AUDIO := true
+AUDIO_FEATURE_ENABLED_INCALL_MUSIC := false
+AUDIO_FEATURE_ENABLED_COMPRESS_VOIP := false
 BOARD_USES_QCOM_AUDIO_CALIBRATION := true
 
 # Bluetooth
@@ -54,6 +56,10 @@ TARGET_KERNEL_SOURCE := kernel/huawei/msm7x30
 BOARD_KERNEL_CMDLINE := androidboot.hardware=qcom androidboot.selinux=permissive
 BOARD_KERNEL_BASE := 0x00200000
 BOARD_KERNEL_PAGESIZE := 4096
+
+# Charger
+BOARD_CHARGER_DISABLE_INIT_BLANK := true
+BOARD_CHARGER_ENABLE_SUSPEND := true
 
 # Recovery
 TARGET_RECOVERY_FSTAB := device/huawei/msm7x30-common/rootdir/fstab.qcom
@@ -76,6 +82,7 @@ TARGET_RELEASETOOLS_EXTENSIONS := device/huawei/msm7x30-common
 TARGET_ENABLE_NON_PIE_SUPPORT := true
 TARGET_DISABLE_ARM_PIE := true
 MALLOC_IMPL := dlmalloc
+TARGET_CONTINUOUS_SPLASH_ENABLED := true
 
 # Enable dex-preoptimization to speed up first boot sequence
 ifeq ($(HOST_OS),linux)

@@ -1,5 +1,7 @@
 package com.blefish.huaweisettings.settings;
 
+import android.content.Context;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -11,7 +13,7 @@ public class WlanMac implements Setting {
     private static final String WLAN_MAC_SYSFS_PATH = "/sys/hwprops/wlanmac";
 
     @Override
-    public boolean isSupported() {
+    public boolean isSupported(Context context) {
         File file = new File(WLAN_MAC_SYSFS_PATH);
         return file.exists();
     }
@@ -22,8 +24,7 @@ public class WlanMac implements Setting {
 
     @Override
     public void writeValue(String value) {
-        if (value != getValue())
-            FileUtils.writeLine(WLAN_MAC_DATA_PATH, value);
+        FileUtils.writeLine(WLAN_MAC_DATA_PATH, value);
         try {
             Runtime.getRuntime().exec("/system/bin/hwprops -wlanmac");
         } catch (IOException e) {

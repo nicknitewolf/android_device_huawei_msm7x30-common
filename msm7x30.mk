@@ -132,16 +132,14 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
-	ro.hs_intmic.supported=1 \
 	audio.offload.disable=1 \
 	persist.sys.media.use-awesome=true
 
 # Graphics properties
 PRODUCT_PROPERTY_OVERRIDES += \
 	debug.sf.hw=1 \
-	debug.egl.hw=1 \
-	debug.composition.type=mdp \
-	persist.hwc.mdpcomp.enable=true \
+	debug.composition.type=dyn \
+	persist.hwc.mdpcomp.enable=false \
 	debug.mdpcomp.maxlayer=3 \
 	debug.mdpcomp.idletime=-1 \
 	persist.sys.force_highendgfx=true
