@@ -94,6 +94,9 @@ on boot
     chown system system /sys/class/timed_output/vibrator/voltage_level
     chmod 0664 /sys/class/timed_output/vibrator/voltage_level
     restorecon /sys/class/timed_output/vibrator/voltage_level
+    chown system system /sys/class/graphics/fb0/cabc
+    chmod 0664 /sys/class/graphics/fb0/cabc
+    restorecon /sys/class/graphics/fb0/cabc
 
     write /proc/sys/vm/page-cluster 0
 
