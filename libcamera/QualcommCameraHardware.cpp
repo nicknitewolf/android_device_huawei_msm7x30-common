@@ -2768,7 +2768,7 @@ int QualcommCameraHardware::mapvideoBuffer(struct msm_frame *frame)
   for (int cnt = 0; cnt < kRecordBufferCount; cnt++) {
      if ((unsigned int)mRecordMapped[cnt]->data == (unsigned int)frame->buffer) {
        ret = cnt;
-       ALOGE("found match returning %d", ret);
+       ALOGV("found match returning %d", ret);
        break;
      }
   }
@@ -2781,7 +2781,7 @@ int QualcommCameraHardware::mapRawBuffer(struct msm_frame *frame)
   for (int cnt = 0; cnt < (mZslEnable? MAX_SNAPSHOT_BUFFERS : numCapture); cnt++) {
      if ((unsigned int)mRawMapped[cnt]->data == (unsigned int)frame->buffer) {
        ret = cnt;
-       ALOGE("found match returning %d", ret);
+       ALOGV("found match returning %d", ret);
        break;
      }
   }
@@ -2793,7 +2793,7 @@ int QualcommCameraHardware::mapThumbnailBuffer(struct msm_frame *frame)
   for (int cnt = 0; cnt < (mZslEnable? MAX_SNAPSHOT_BUFFERS : numCapture); cnt++) {
      if ((unsigned int)(uint8_t *)mThumbnailMapped[cnt] == (unsigned int)frame->buffer) {
        ret = cnt;
-       ALOGE("found match returning %d", ret);
+       ALOGV("found match returning %d", ret);
        break;
      }
   }
@@ -2806,7 +2806,7 @@ int QualcommCameraHardware::mapJpegBuffer(mm_camera_buffer_t *encode_buffer)
   for (int cnt = 0; cnt < (mZslEnable? MAX_SNAPSHOT_BUFFERS : numCapture); cnt++) {
      if ((unsigned int)mJpegMapped[cnt]->data == (unsigned int)encode_buffer->ptr) {
        ret = cnt;
-       ALOGE("found match returning %d", ret);
+       ALOGV("found match returning %d", ret);
        break;
      }
   }
@@ -2915,7 +2915,7 @@ void QualcommCameraHardware::runHFRThread(void *data)
 
 void QualcommCameraHardware::runVideoThread(void *data)
 {
-    ALOGD("runVideoThread E");
+    ALOGV("runVideoThread E");
     msm_frame* vframe = NULL;
     CAMERA_HAL_UNUSED(data);
 
@@ -2951,7 +2951,7 @@ void QualcommCameraHardware::runVideoThread(void *data)
         // Get the video frame to be encoded
         vframe = cam_frame_get_video ();
         pthread_mutex_unlock(&(g_busy_frame_queue.mut));
-        ALOGE("in video_thread : got video frame %x",vframe);
+        ALOGV("in video_thread : got video frame %x",vframe);
 
         if(vframe != NULL) {
             /* Extract the timestamp of this frame */
@@ -5496,7 +5496,7 @@ void QualcommCameraHardware::receiveLiveSnapshot()
 }
 void QualcommCameraHardware::receivePreviewFrame(struct msm_frame *frame)
 {
-    ALOGI("receivePreviewFrame E");
+    ALOGV("receivePreviewFrame E");
     if (!mCameraRunning) {
         ALOGE("ignoring preview callback--camera has been stopped");
         LINK_camframe_add_frame(CAM_PREVIEW_FRAME,frame);
@@ -5509,7 +5509,7 @@ void QualcommCameraHardware::receivePreviewFrame(struct msm_frame *frame)
         LINK_camframe_add_frame(CAM_PREVIEW_FRAME,frame);
 
 
-    ALOGI("receivePreviewFrame X");
+    ALOGV("receivePreviewFrame X");
 }
 void QualcommCameraHardware::receiveCameraStats(camstats_type stype, camera_preview_histogram_info* histinfo)
 {
@@ -5927,7 +5927,7 @@ void QualcommCameraHardware::stopRecording()
 
 void QualcommCameraHardware::releaseRecordingFrame(const void *opaque)
 {
-    ALOGE("%s : BEGIN, opaque = 0x%p",__func__, opaque);
+    ALOGV("%s : BEGIN, opaque = 0x%p",__func__, opaque);
     Mutex::Autolock rLock(&mRecordFrameLock);
     mReleasedRecordingFrame = true;
     mRecordWait.signal();
