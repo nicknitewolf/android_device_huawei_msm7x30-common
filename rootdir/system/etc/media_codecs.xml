@@ -39,11 +39,6 @@
         </MediaCodec>
     </Encoders>
     <Decoders>
-        <!-- Audio Hardware  -->
-        <MediaCodec name="OMX.qcom.audio.decoder.mp3" type="audio/mpeg" >
-            <Quirk name="requires-global-flush" />
-        </MediaCodec>
-
         <!-- Video Hardware -->
         <MediaCodec name="OMX.qcom.video.decoder.avc" type="video/avc" >
             <Quirk name="requires-allocate-on-input-ports" />
