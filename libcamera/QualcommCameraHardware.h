@@ -133,7 +133,6 @@ public:
     virtual void disableMsgType(int32_t msgType);
     virtual bool msgTypeEnabled(int32_t msgType);
 
-    virtual status_t dump(int fd, const Vector<String16>& args) const;
     virtual status_t startPreview();
     virtual void stopPreview();
     virtual bool previewEnabled();
@@ -155,21 +154,20 @@ public:
     virtual status_t set_PreviewWindow(void* param);
     virtual status_t setPreviewWindow(preview_stream_ops_t* window);
 #endif
-    virtual status_t setPreviewWindow(const sp<ANativeWindow>& buf) {return NO_ERROR;};
     virtual void release();
 
     static QualcommCameraHardware* createInstance();
     static QualcommCameraHardware* getInstance();
 
     void receivePreviewFrame(struct msm_frame *frame);
-    void receiveLiveSnapshot(uint32_t jpeg_size);
+    void receiveLiveSnapshot();
     void receiveCameraStats(camstats_type stype, camera_preview_histogram_info* histinfo);
     void receiveRecordingFrame(struct msm_frame *frame);
     void receiveJpegPicture(status_t status, mm_camera_buffer_t *encoded_buffer);
     void notifyShutter(bool mPlayShutterSoundOnly);
     void receive_camframe_error_timeout();
     static void getCameraInfo();
-    void receiveRawPicture(status_t status,struct msm_frame *postviewframe, struct msm_frame *mainframe);
+    void receiveRawPicture(status_t status,struct msm_frame *postviewframe);
     int allocate_ion_memory(int *main_ion_fd, struct ion_allocation_data* alloc,
     struct ion_fd_data* ion_info_fd, int ion_type, int size, int *memfd);
     int deallocate_ion_memory(int *main_ion_fd, struct ion_fd_data* ion_info_fd);
@@ -302,7 +300,7 @@ private:
     Mutex mSmoothzoomThreadLock;
     Condition mSmoothzoomThreadWait;
     friend void *smoothzoom_thread(void *user);
-    void runSmoothzoomThread(void* data);
+    void runSmoothzoomThread();
 
     // For Histogram
     int mStatsOn;

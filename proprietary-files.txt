@@ -60,6 +60,3 @@ system/vendor/lib/libgsl.so
 system/vendor/lib/libOpenCL.so
 system/vendor/lib/libOpenVG.so
 system/vendor/lib/libsc-a2xx.so
-
-# OMX extensions
-system/lib/libOmxMp3Dec.so

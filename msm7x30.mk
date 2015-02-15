@@ -125,7 +125,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	persist.sys.strictmode.disable=1 \
 	ro.config.max_starting_bg=4 \
 	ro.sys.fw.bg_apps_limit=16 \
-	config.disable_atlas=true
+	config.disable_atlas=true \
+	persist.sys.isUsbOtgEnabled=1
 
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
