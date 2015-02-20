@@ -25,7 +25,7 @@ public class Startup extends BroadcastReceiver {
 
         if (MainActivity.usbHost.isSupported(context)) {
             Boolean value = sharedPreferences.getBoolean(MainActivity.PREF_USB_HOST_KEY, false);
-            MainActivity.usbHost.writeValue(value.toString());
+            MainActivity.usbHost.writeValueNotification(context, value.toString());
         }
         if (MainActivity.usbCurrent.isSupported(context)) {
             String value = sharedPreferences.getString(MainActivity.PREF_USB_CURRENT_KEY, "-1");

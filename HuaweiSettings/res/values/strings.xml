@@ -46,4 +46,8 @@
     <string name="toast_removed_calibration">Magnetic calibration removed</string>
     <string name="toast_restart_bluetooth">Please restart Bluetooth</string>
     <string name="toast_restart_wifi">Please restart Wi-Fi</string>
+
+    <!-- Notifications -->
+    <string name="not_usb_host_title">USB host turned on</string>
+    <string name="not_usb_host_text">Turn off host to save power</string>
 </resources>
