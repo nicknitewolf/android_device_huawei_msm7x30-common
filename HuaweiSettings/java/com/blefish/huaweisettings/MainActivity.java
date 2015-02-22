@@ -212,7 +212,7 @@ public class MainActivity extends PreferenceActivity {
                 showToast(getString(R.string.toast_restart_bluetooth));
             } else if (key.equals(PREF_USB_HOST_KEY)) {
                 Boolean value = sharedPreferences.getBoolean(PREF_USB_HOST_KEY, false);
-                usbHost.writeValue(value.toString());
+                usbHost.writeValueNotification(MainActivity.this, value.toString());
             } else if (key.equals(PREF_USB_CURRENT_KEY)) {
                 String value = sharedPreferences.getString(PREF_USB_CURRENT_KEY, "-1");
                 usbCurrent.writeValue(value.toString());
