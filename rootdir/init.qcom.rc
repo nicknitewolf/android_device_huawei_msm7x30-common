@@ -112,6 +112,11 @@ on boot
     setprop net.tcp.usercfg.wifi       1
     setprop net.tcp.usercfg.lte        1
 
+    # Flash storage isn't a good entropy source, and only causes locking
+    # overhead in the kernel. Turn it off.
+    write /sys/block/mmcblk0/queue/add_random 0
+    write /sys/block/mmcblk1/queue/add_random 0
+
     # Huawei Settings
     chown system system /sys/devices/platform/msm_otg/mode
     chown system system /sys/devices/platform/msm_otg/manual_chg
