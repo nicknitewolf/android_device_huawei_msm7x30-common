@@ -922,9 +922,7 @@ void QualcommCameraHardware::storeTargetType(void) {
     return;
 }
 
-void *openCamera(void *data) {
-    CAMERA_HAL_UNUSED(data);
-
+void *QualcommCameraHardware::openCamera() {
     ALOGV(" openCamera : E");
     mCameraOpen = false;
 
@@ -979,11 +977,8 @@ void *openCamera(void *data) {
             LINK_mm_camera_deinit();
             return false;
         }
-        QualcommCameraHardware* obj = QualcommCameraHardware::getInstance();
-        if (obj != 0) {
-            obj->mSnapshot3DFormat = snapshotFrame.format;
-            ALOGI("%s: 3d format  snapshot %d", __func__, obj->mSnapshot3DFormat);
-        }
+        mSnapshot3DFormat = snapshotFrame.format;
+        ALOGI("%s: 3d format  snapshot %d", __func__, mSnapshot3DFormat);
     }
 
     ALOGV("openCamera : X");
@@ -1125,7 +1120,7 @@ QualcommCameraHardware::QualcommCameraHardware()
         HAL_currentCameraMode = CAMERA_MODE_3D;
     }
 
-    if( (pthread_create(&mDeviceOpenThread, NULL, openCamera, NULL)) != 0) {
+    if( (pthread_create(&mDeviceOpenThread, NULL, openCameraThread, this)) != 0) {
         ALOGE(" openCamera thread creation failed ");
     }
     memset(&mDimension, 0, sizeof(mDimension));
@@ -2386,7 +2381,7 @@ static bool register_buf(int size,
                          bool vfe_can_write,
                          bool register_buffer = true);
 
-void QualcommCameraHardware::runFrameThread(void *data)
+void *QualcommCameraHardware::runFrameThread()
 {
     ALOGV("runFrameThread E");
     int type;
@@ -2394,7 +2389,7 @@ void QualcommCameraHardware::runFrameThread(void *data)
 
     if(libmmcamera)
     {
-        LINK_cam_frame(data);
+        LINK_cam_frame(&camframeParams);
     }
     //waiting for preview thread to complete before clearing of the buffers
     mPreviewThreadWaitLock.lock();
@@ -2476,15 +2471,15 @@ void QualcommCameraHardware::runFrameThread(void *data)
     mFrameThreadWaitLock.unlock();
 
     ALOGV("runFrameThread X");
+
+    return NULL;
 }
 
-
-void QualcommCameraHardware::runPreviewThread(void *data)
+void *QualcommCameraHardware::runPreviewThread()
 {
     static int hfr_count = 0;
     msm_frame* frame = NULL;
     status_t retVal = NO_ERROR;
-    CAMERA_HAL_UNUSED(data);
     android_native_buffer_t *buffer;
 	buffer_handle_t *handle = NULL;
     int bufferIndex = 0;
@@ -2750,6 +2745,7 @@ void QualcommCameraHardware::runPreviewThread(void *data)
     mPreviewThreadRunning = false;
     mPreviewThreadWait.signal();
     mPreviewThreadWaitLock.unlock();
+    return NULL;
 }
 int QualcommCameraHardware::mapBuffer(struct msm_frame *frame) {
   int ret = -1;
@@ -2822,34 +2818,9 @@ int QualcommCameraHardware::mapFrame(buffer_handle_t *buffer) {
   return ret;
 }
 
-void *preview_thread(void *user)
-{
-    ALOGI("preview_thread E");
-    QualcommCameraHardware  *obj = QualcommCameraHardware::getInstance();
-    if (obj != 0) {
-        obj->runPreviewThread(user);
-    }
-    else ALOGE("not starting preview thread: the object went away!");
-    ALOGI("preview_thread X");
-    return NULL;
-}
-
-void *hfr_thread(void *user)
-{
-    ALOGI("hfr_thread E");
-    QualcommCameraHardware *obj = QualcommCameraHardware::getInstance();
-    if (obj != 0) {
-        obj->runHFRThread(user);
-    }
-    else ALOGE("not starting hfr thread: the object went away!");
-    ALOGI("hfr_thread X");
-    return NULL;
-}
-
-void QualcommCameraHardware::runHFRThread(void *data)
+void *QualcommCameraHardware::runHFRThread()
 {
     ALOGD("runHFRThread E");
-    CAMERA_HAL_UNUSED(data);
     ALOGI("%s: stopping Preview", __FUNCTION__);
     stopPreviewInternal();
 
@@ -2910,13 +2881,13 @@ void QualcommCameraHardware::runHFRThread(void *data)
     else {
         getBuffersAndStartPreview();
     }
+    return NULL;
 }
 
-void QualcommCameraHardware::runVideoThread(void *data)
+void *QualcommCameraHardware::runVideoThread()
 {
     ALOGV("runVideoThread E");
     msm_frame* vframe = NULL;
-    CAMERA_HAL_UNUSED(data);
 
     while(true) {
         pthread_mutex_lock(&(g_busy_frame_queue.mut));
@@ -2992,32 +2963,7 @@ void QualcommCameraHardware::runVideoThread(void *data)
     mVideoThreadWaitLock.unlock();
 
     ALOGV("runVideoThread X");
-}
 
-void *video_thread(void *user)
-{
-    ALOGV("video_thread E");
-    CAMERA_HAL_UNUSED(user);
-
-    QualcommCameraHardware *obj = QualcommCameraHardware::getInstance();
-    if (obj != 0) {
-        obj->runVideoThread(user);
-    }
-    else ALOGE("not starting video thread: the object went away!");
-    ALOGV("video_thread X");
-    return NULL;
-}
-
-void *frame_thread(void *user)
-{
-    ALOGD("frame_thread E");
-    CAMERA_HAL_UNUSED(user);
-    QualcommCameraHardware *obj = QualcommCameraHardware::getInstance();
-    if (obj != 0) {
-        obj->runFrameThread(user);
-    }
-    else ALOGW("not starting frame thread: the object went away!");
-    ALOGD("frame_thread X");
     return NULL;
 }
 
@@ -3264,8 +3210,8 @@ ALOGE("%s Got preview dimension as %d x %d ", __func__, previewWidth, previewHei
 
             mPreviewThreadRunning = !pthread_create(&mPreviewThread,
                                       &pattr,
-                                      preview_thread,
-                                      (void*)NULL);
+                                      openPreviewThread,
+                                      this);
             ret = mPreviewThreadRunning;
             mPreviewThreadWaitLock.unlock();
 
@@ -3289,8 +3235,8 @@ ALOGE("%s Got preview dimension as %d x %d ", __func__, previewWidth, previewHei
 
         mFrameThreadRunning = !pthread_create(&mFrameThread,
                                               &attr,
-                                              frame_thread,
-                                              &camframeParams);
+                                              openFrameThread,
+                                              this);
         ret = mFrameThreadRunning;
         mFrameThreadWaitLock.unlock();
         LINK_wait_cam_frame_thread_ready();
@@ -4599,7 +4545,7 @@ void QualcommCameraHardware::stopPreview()
     ALOGV("stopPreview: X");
 }
 
-void QualcommCameraHardware::runAutoFocus()
+void *QualcommCameraHardware::runAutoFocus()
 {
     bool status = true;
     void *libhandle = NULL;
@@ -4619,7 +4565,7 @@ void QualcommCameraHardware::runAutoFocus()
         ALOGE("FATAL ERROR: could not dlopen liboemcamera.so: %s", dlerror());
         mAutoFocusThreadRunning = false;
         mAutoFocusThreadLock.unlock();
-        return;
+        return (void *)-1;
     }
 
     afMode = (isp3a_af_mode_t)attr_lookup(focus_modes,
@@ -4670,7 +4616,7 @@ done:
     mCallbackLock.unlock();
     if (autoFocusEnabled)
         cb(CAMERA_MSG_FOCUS, status, 0, data);
-
+    return NULL;
 }
 
 status_t QualcommCameraHardware::cancelAutoFocusInternal()
@@ -4716,19 +4662,6 @@ status_t QualcommCameraHardware::cancelAutoFocusInternal()
     return rc;
 }
 
-void *auto_focus_thread(void *user)
-{
-    ALOGV("auto_focus_thread E");
-    CAMERA_HAL_UNUSED(user);
-    QualcommCameraHardware *obj = QualcommCameraHardware::getInstance();
-    if (obj != 0) {
-        obj->runAutoFocus();
-    }
-    else ALOGW("not starting autofocus: the object went away!");
-    ALOGV("auto_focus_thread X");
-    return NULL;
-}
-
 status_t QualcommCameraHardware::autoFocus()
 {
     ALOGV("autoFocus E");
@@ -4757,7 +4690,7 @@ status_t QualcommCameraHardware::autoFocus()
             pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
             mAutoFocusThreadRunning =
                 !pthread_create(&thr, &attr,
-                                auto_focus_thread, NULL);
+                                openAutoFocusThread, this);
             if (!mAutoFocusThreadRunning) {
                 ALOGE("failed to start autofocus thread");
                 mAutoFocusThreadLock.unlock();
@@ -4785,10 +4718,9 @@ status_t QualcommCameraHardware::cancelAutoFocus()
     return rc;
 }
 
-void QualcommCameraHardware::runSnapshotThread(void *data)
+void *QualcommCameraHardware::runSnapshotThread()
 {
     bool ret = true;
-    CAMERA_HAL_UNUSED(data);
     ALOGI("runSnapshotThread E");
 
     if(!libmmcamera){
@@ -4808,7 +4740,7 @@ void QualcommCameraHardware::runSnapshotThread(void *data)
         mSnapshotThreadRunning = false;
         mSnapshotThreadWait.signal();
         mSnapshotThreadWaitLock.unlock();
-        return;
+        return NULL;
     }
     mSnapshotCancelLock.unlock();
 
@@ -4872,18 +4804,7 @@ void QualcommCameraHardware::runSnapshotThread(void *data)
     mSnapshotThreadWait.signal();
     mSnapshotThreadWaitLock.unlock();
     ALOGI("runSnapshotThread X");
-}
 
-void *snapshot_thread(void *user)
-{
-    ALOGD("snapshot_thread E");
-    CAMERA_HAL_UNUSED(user);
-    QualcommCameraHardware *obj = QualcommCameraHardware::getInstance();
-    if (obj != 0) {
-        obj->runSnapshotThread(user);
-    }
-    else ALOGW("not starting snapshot thread: the object went away!");
-    ALOGD("snapshot_thread X");
     return NULL;
 }
 
@@ -4994,8 +4915,8 @@ status_t QualcommCameraHardware::takePicture()
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
     mSnapshotThreadRunning = !pthread_create(&mSnapshotThread,
                                              &attr,
-                                             snapshot_thread,
-                                             NULL);
+                                             openSnapshotThread,
+                                             this);
     mSnapshotThreadWaitLock.unlock();
 
     mInSnapshotModeWaitLock.lock();
@@ -5266,21 +5187,6 @@ status_t QualcommCameraHardware::runFaceDetection()
 	return BAD_VALUE;
 }
 
-void* smoothzoom_thread(void* user)
-{
-    // call runsmoothzoomthread
-    ALOGV("smoothzoom_thread E");
-    CAMERA_HAL_UNUSED(user);
-
-    QualcommCameraHardware* obj = QualcommCameraHardware::getInstance();
-    if (obj != 0) {
-        obj->runSmoothzoomThread();
-    }
-    else ALOGE("not starting smooth zoom thread: the object went away!");
-    ALOGV("Smoothzoom_thread X");
-    return NULL;
-}
-
 status_t QualcommCameraHardware::sendCommand(int32_t command, int32_t arg1,
                                              int32_t arg2)
 {
@@ -5308,7 +5214,7 @@ status_t QualcommCameraHardware::sendCommand(int32_t command, int32_t arg1,
    return BAD_VALUE;
 }
 
-void QualcommCameraHardware::runSmoothzoomThread() {
+void *QualcommCameraHardware::runSmoothzoomThread() {
 
     ALOGV("runSmoothzoomThread: Current zoom %d - "
           "Target %d", mParameters.getInt("zoom"), mTargetSmoothZoom);
@@ -5323,7 +5229,7 @@ void QualcommCameraHardware::runSmoothzoomThread() {
                 current_zoom, 1, mCallbackCookie);
         else
             ALOGV("Not issuing callback since preview is stopping");
-        return;
+        return NULL;
     }
 
     QCameraParameters p = getParameters();
@@ -5373,6 +5279,8 @@ void QualcommCameraHardware::runSmoothzoomThread() {
     mSmoothzoomThreadRunning = false;
     mSmoothzoomThreadWaitLock.unlock();
     ALOGV("Exiting Smooth Zoom Thread");
+
+    return NULL;
 }
 
 extern "C" QualcommCameraHardware* HAL_openCameraHardware(int cameraId)
@@ -5792,8 +5700,8 @@ status_t QualcommCameraHardware::startRecording()
           pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
           mVideoThreadRunning = pthread_create(&mVideoThread,
                 &attr,
-                video_thread,
-                NULL);
+                openVideoThread,
+                this);
           mVideoThreadWaitLock.unlock();
       } else if ( mCurrentTarget == TARGET_MSM7627A ) {
         for (int cnt = 0; cnt < mTotalPreviewBufferCount; cnt++) {
@@ -5867,8 +5775,8 @@ status_t QualcommCameraHardware::startRecordingInternal()
         pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
         mVideoThreadRunning = !pthread_create(&mVideoThread,
                                               &attr,
-                                              video_thread,
-                                              NULL);
+                                              openVideoThread,
+                                              this);
         mVideoThreadWaitLock.unlock();
         // Remove the left out frames in busy Q and them in free Q.
     }
@@ -7001,8 +6909,8 @@ status_t QualcommCameraHardware::setHighFrameRate(const QCameraParameters& param
                     pthread_attr_setdetachstate(&pattr, PTHREAD_CREATE_DETACHED);
                     mHFRThreadRunning = !pthread_create(&mHFRThread,
                                       &pattr,
-                                      hfr_thread,
-                                      (void*)NULL);
+                                      openHFRThread,
+                                      this);
                     mHFRThreadWaitLock.unlock();
                     return NO_ERROR;
                 }
