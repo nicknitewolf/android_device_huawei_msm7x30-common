@@ -270,20 +270,6 @@ static int attr_lookup(const str_map arr[], int len, const char *name)
     return NOT_FOUND;
 }
 
-// round to the next power of two
-static inline unsigned clp2(unsigned x)
-{
-    x = x - 1;
-    x = x | (x >> 1);
-    x = x | (x >> 2);
-    x = x | (x >> 4);
-    x = x | (x >> 8);
-    x = x | (x >>16);
-    return x + 1;
-}
-
-
-//static zoom_crop_info zoomCropInfo;
 static android_native_rect_t zoomCropInfo;
 static void *mLastQueuedFrame = NULL;
 #define RECORD_BUFFERS 9
@@ -1000,7 +986,6 @@ static void receive_camframe_video_callback(struct msm_frame *frame); // 720p
 static int8_t receive_event_callback(mm_camera_event* event);
 static void receive_shutter_callback(common_crop_t *crop);
 static void receive_camframe_error_callback(camera_error_type err);
-static int fb_fd = -1;
 static int32_t mMaxZoom = 0;
 static bool zoomSupported = false;
 static int dstOffset = 0;
@@ -2494,8 +2479,6 @@ void *QualcommCameraHardware::runPreviewThread()
         void *pdata = mCallbackCookie;
         camera_data_timestamp_callback rcb = mDataCallbackTimestamp;
         void *rdata = mCallbackCookie;
-        camera_data_callback mcb = mDataCallback;
-        void *mdata = mCallbackCookie;
         mCallbackLock.unlock();
 
         // signal smooth zoom thread , that a new preview frame is available
@@ -4189,10 +4172,6 @@ void QualcommCameraHardware::release()
     deinitRawSnapshot();
     ALOGI("release: clearing resources done.");
     LINK_mm_camera_deinit();
-    if(fb_fd >= 0) {
-        close(fb_fd);
-        fb_fd = -1;
-    }
     singleton_lock.lock();
     singleton_releasing = true;
     singleton_releasing_start_time = systemTime();
