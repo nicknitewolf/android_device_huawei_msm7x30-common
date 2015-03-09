@@ -6297,12 +6297,13 @@ status_t QualcommCameraHardware::setRecordSize(const QCameraParameters& params)
 
 status_t  QualcommCameraHardware::setCameraMode(const QCameraParameters& params) {
     int32_t value = params.getInt(QCameraParameters::KEY_QC_CAMERA_MODE);
-    mParameters.set(QCameraParameters::KEY_QC_CAMERA_MODE,value);
 
     /* ZSL is only supported on MSM8660 */
     if (mCurrentTarget != TARGET_MSM8660 && value == 1) {
         return BAD_VALUE;
     }
+
+    mParameters.set(QCameraParameters::KEY_QC_CAMERA_MODE, value);
 
     ALOGI("ZSL is enabled  %d", value);
     if( value != mZslEnable) {
