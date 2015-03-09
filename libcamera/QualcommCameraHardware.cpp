@@ -4273,6 +4273,7 @@ QualcommCameraHardware::~QualcommCameraHardware()
         delete [] recordframes;
         recordframes = NULL;
         delete [] record_buffers_tracking_flag;
+        record_buffers_tracking_flag = NULL;
     }
     mMMCameraDLRef.clear();
     ALOGI("~QualcommCameraHardware X");
