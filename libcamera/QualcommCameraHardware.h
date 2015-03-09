@@ -246,6 +246,7 @@ private:
     Condition mPreviewThreadWait;
     void *openCamera();
     static void *openCameraThread(void *data) { return ((QualcommCameraHardware *)data)->openCamera(); }
+    int mHFRCount;
     void *runPreviewThread();
     static void *openPreviewThread(void *data) { return ((QualcommCameraHardware *)data)->runPreviewThread(); }
     void *runHFRThread();

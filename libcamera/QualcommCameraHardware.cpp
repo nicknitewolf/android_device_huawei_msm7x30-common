@@ -1015,6 +1015,7 @@ QualcommCameraHardware::QualcommCameraHardware()
       mCameraRunning(false),
       mPreviewInitialized(false),
       mPreviewThreadRunning(false),
+      mHFRCount(0),
       mHFRThreadRunning(false),
       mFrameThreadRunning(false),
       mVideoThreadRunning(false),
@@ -2462,7 +2463,6 @@ void *QualcommCameraHardware::runFrameThread()
 
 void *QualcommCameraHardware::runPreviewThread()
 {
-    static int hfr_count = 0;
     msm_frame* frame = NULL;
     status_t retVal = NO_ERROR;
     android_native_buffer_t *buffer;
@@ -2600,19 +2600,19 @@ void *QualcommCameraHardware::runPreviewThread()
              const char *str = mParameters.get(QCameraParameters::KEY_QC_VIDEO_HIGH_FRAME_RATE);
              if(str != NULL){
                  int is_hfr_off = 0;
-                 hfr_count++;
+                 mHFRCount++;
                  if(!strcmp(str, QCameraParameters::VIDEO_HFR_OFF)) {
                     is_hfr_off = 1;
                     retVal = mPreviewWindow->enqueue_buffer(mPreviewWindow,
                                                frame_buffer[bufferIndex].buffer);
                  } else if (!strcmp(str, QCameraParameters::VIDEO_HFR_2X)) {
-                    hfr_count %= 2;
+                    mHFRCount %= 2;
                  } else if (!strcmp(str, QCameraParameters::VIDEO_HFR_3X)) {
-                    hfr_count %= 3;
+                    mHFRCount %= 3;
                  } else if (!strcmp(str, QCameraParameters::VIDEO_HFR_4X)) {
-                    hfr_count %= 4;
+                    mHFRCount %= 4;
                  }
-                 if(hfr_count == 0)
+                 if(mHFRCount == 0)
                      retVal = mPreviewWindow->enqueue_buffer(mPreviewWindow,
                                                 frame_buffer[bufferIndex].buffer);
                  else if(!is_hfr_off)
