@@ -97,6 +97,9 @@ on boot
     chown system system /sys/class/graphics/fb0/cabc
     chmod 0664 /sys/class/graphics/fb0/cabc
     restorecon /sys/class/graphics/fb0/cabc
+    chown system system /sys/class/graphics/fb0/kcal
+    chmod 0664 /sys/class/graphics/fb0/kcal
+    restorecon /sys/class/graphics/fb0/kcal
 
     write /proc/sys/vm/page-cluster 0
 
