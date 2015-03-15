@@ -4194,6 +4194,9 @@ QualcommCameraHardware::~QualcommCameraHardware()
 {
     ALOGI("~QualcommCameraHardware E");
 
+    int ret_val;
+    pthread_join(mDeviceOpenThread, (void**)&ret_val);
+
     if( mCurrentTarget == TARGET_MSM7630 || mCurrentTarget == TARGET_QSD8250 || mCurrentTarget == TARGET_MSM8660 ) {
         delete [] recordframes;
         recordframes = NULL;
