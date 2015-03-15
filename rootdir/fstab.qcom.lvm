@@ -6,6 +6,7 @@
 /dev/partitions/system                                  /system         ext4    ro,barrier=1                    wait
 /dev/partitions/cache                                   /cache          ext4    noatime,nosuid,nodev,barrier=1,data=ordered,noauto_da_alloc,journal_async_commit,errors=panic   wait,check
 /dev/partitions/userdata                                /data           ext4    noatime,nosuid,nodev,barrier=1,data=ordered,noauto_da_alloc,journal_async_commit,errors=panic   wait,check,encryptable=footer,length=-16384
+/dev/partitions/userdata                                /data           f2fs    rw,discard,nosuid,nodev,noatime,nodiratime,inline_xattr                                         wait,check
 
 /devices/platform/msm_sdcc.4/mmc_host/mmc2*             auto            auto    defaults                        voldmanaged=sdcard0:auto,noemulatedsd
 /devices/virtual/block/dm-3*                            auto            vfat    defaults                        voldmanaged=sdcard1:nonremovable,noemulatedsd
