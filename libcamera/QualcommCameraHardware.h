@@ -184,8 +184,8 @@ private:
     status_t setFaceDetection(const char *str);
 
     void stopPreviewInternal();
-    friend void *auto_focus_thread(void *user);
-    void runAutoFocus();
+    void *runAutoFocus();
+    static void *openAutoFocusThread(void *data) { return ((QualcommCameraHardware *)data)->runAutoFocus(); }
     status_t cancelAutoFocusInternal();
     bool updatePictureDimension(const QCameraParameters& params, int& width, int& height);
     bool native_set_parms(camera_parm_type_t type, uint16_t length, void *value);
@@ -244,11 +244,13 @@ private:
                                    bool initJpegHeap, int snapshotFormat = 1 /*PICTURE_FORMAT_JPEG*/);
     Mutex mPreviewThreadWaitLock;
     Condition mPreviewThreadWait;
-    friend void *preview_thread(void *user);
-    friend void *openCamera(void *data);
-    void runPreviewThread(void *data);
-    friend void *hfr_thread(void *user);
-    void runHFRThread(void *data);
+    void *openCamera();
+    static void *openCameraThread(void *data) { return ((QualcommCameraHardware *)data)->openCamera(); }
+    int mHFRCount;
+    void *runPreviewThread();
+    static void *openPreviewThread(void *data) { return ((QualcommCameraHardware *)data)->runPreviewThread(); }
+    void *runHFRThread();
+    static void *openHFRThread(void *data) { return ((QualcommCameraHardware *)data)->runHFRThread(); }
     bool mHFRThreadRunning;
 	int mapBuffer(msm_frame *frame);
 	int mapRawBuffer(msm_frame *frame);
@@ -281,16 +283,16 @@ private:
     bool mFrameThreadRunning;
     Mutex mFrameThreadWaitLock;
     Condition mFrameThreadWait;
-    friend void *frame_thread(void *user);
-    void runFrameThread(void *data);
+    void *runFrameThread();
+    static void *openFrameThread(void *data) { return ((QualcommCameraHardware *)data)->runFrameThread(); }
 
     //720p recording video thread
     bool mVideoThreadExit;
     bool mVideoThreadRunning;
     Mutex mVideoThreadWaitLock;
     Condition mVideoThreadWait;
-    friend void *video_thread(void *user);
-    void runVideoThread(void *data);
+    void *runVideoThread();
+    static void *openVideoThread(void *data) { return ((QualcommCameraHardware *)data)->runVideoThread(); }
 
     // smooth zoom
     int mTargetSmoothZoom;
@@ -299,8 +301,8 @@ private:
     Mutex mSmoothzoomThreadWaitLock;
     Mutex mSmoothzoomThreadLock;
     Condition mSmoothzoomThreadWait;
-    friend void *smoothzoom_thread(void *user);
-    void runSmoothzoomThread();
+    void *runSmoothzoomThread();
+    static void *openSmoothZoomThread(void *data) { return ((QualcommCameraHardware *)data)->runSmoothzoomThread(); }
 
     // For Histogram
     int mStatsOn;
@@ -320,8 +322,8 @@ private:
     bool mSnapshotThreadRunning;
     Mutex mSnapshotThreadWaitLock;
     Condition mSnapshotThreadWait;
-    friend void *snapshot_thread(void *user);
-    void runSnapshotThread(void *data);
+    void *runSnapshotThread();
+    static void *openSnapshotThread(void *data) { return ((QualcommCameraHardware *)data)->runSnapshotThread(); }
     Mutex mRawPictureHeapLock;
     bool mJpegThreadRunning;
     Mutex mJpegThreadWaitLock;
