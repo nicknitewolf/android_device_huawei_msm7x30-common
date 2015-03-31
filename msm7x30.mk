@@ -130,6 +130,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	config.disable_atlas=true \
 	persist.sys.isUsbOtgEnabled=1
 
+# ART
+PRODUCT_PROPERTY_OVERRIDES += \
+	dalvik.vm.dex2oat-filter=interpret-only \
+	dalvik.vm.image-dex2oat-filter=speed
+
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
 	audio.offload.disable=1 \
