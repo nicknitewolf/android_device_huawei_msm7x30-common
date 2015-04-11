@@ -19,14 +19,17 @@ TARGET_ARCH_VARIANT := armv7-a-neon
 TARGET_CPU_VARIANT := scorpion
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
-TARGET_CPU_SMP := false
 
 TARGET_ARCH_LOWMEM := true
 TARGET_BOARD_PLATFORM := msm7x30
 
 # Qualcomm hardware
 BOARD_USES_QCOM_HARDWARE := true
+TARGET_USES_QCOM_BSP := true
 TARGET_USE_QCOM_BIONIC_OPTIMIZATION := true
+TARGET_QCOM_AUDIO_VARIANT := caf
+TARGET_QCOM_DISPLAY_VARIANT := caf
+TARGET_QCOM_MEDIA_VARIANT := caf
 
 # Graphics
 USE_OPENGL_RENDERER := true
@@ -37,9 +40,6 @@ HWUI_COMPILE_FOR_PERF := true
 
 # Audio
 BOARD_USES_LEGACY_ALSA_AUDIO := true
-AUDIO_FEATURE_ENABLED_INCALL_MUSIC := false
-AUDIO_FEATURE_ENABLED_COMPRESS_VOIP := false
-AUDIO_FEATURE_ENABLED_PROXY_DEVICE := false
 BOARD_USES_QCOM_AUDIO_CALIBRATION := true
 
 # Bluetooth
@@ -65,6 +65,9 @@ BOARD_CHARGER_ENABLE_SUSPEND := true
 # Recovery
 TARGET_RECOVERY_FSTAB := device/huawei/msm7x30-common/rootdir/fstab.qcom
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
+BOARD_HAS_NO_SELECT_BUTTON := true
+BOARD_RECOVERY_SWIPE := true
+BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/huawei/msm7x30-common/recovery/recovery_keys.c
 
 # Filesystem
 # 800MiB/839MB
@@ -77,20 +80,9 @@ TARGET_USERIMAGES_USE_EXT4 := true
 BOARD_FLASH_BLOCK_SIZE := 512
 TARGET_USES_ION := true
 TARGET_USE_CUSTOM_LUN_FILE_PATH := /sys/devices/platform/msm_hsusb/gadget/lun%d/file
+TARGET_NO_INITLOGO := true
 TARGET_RELEASETOOLS_EXTENSIONS := device/huawei/msm7x30-common
-TARGET_NEEDS_NON_PIE_SUPPORT := true
-TARGET_DISABLE_ARM_PIE := true
-MALLOC_IMPL := dlmalloc
-TARGET_CONTINUOUS_SPLASH_ENABLED := true
-
-# Enable dex-preoptimization to speed up first boot sequence
-ifeq ($(HOST_OS),linux)
-  ifeq ($(TARGET_BUILD_VARIANT),userdebug)
-    ifeq ($(WITH_DEXPREOPT),)
-      WITH_DEXPREOPT := true
-    endif
-  endif
-endif
+BOARD_VOLD_MAX_PARTITIONS := 14
 
 TARGET_GLOBAL_CFLAGS += -mfpu=neon -mfloat-abi=softfp
 TARGET_GLOBAL_CPPFLAGS += -mfpu=neon -mfloat-abi=softfp

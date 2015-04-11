@@ -37,13 +37,6 @@ PRODUCT_COPY_FILES += \
 	frameworks/native/data/etc/android.hardware.usb.accessory.xml:system/etc/permissions/android.hardware.usb.accessory.xml \
 	frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml
 
-# Media codecs
-PRODUCT_COPY_FILES += \
-	frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/etc/media_codecs_google_audio.xml \
-	frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:system/etc/media_codecs_google_telephony.xml \
-	frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:system/etc/media_codecs_google_video.xml \
-	frameworks/av/media/libstagefright/data/media_codecs_ffmpeg.xml:system/etc/media_codecs_ffmpeg.xml
-
 # Graphics libraries
 PRODUCT_PACKAGES += \
 	libc2dcolorconvert \
@@ -70,6 +63,7 @@ PRODUCT_PACKAGES += \
 # HAL
 PRODUCT_PACKAGES += \
 	audio.a2dp.default \
+	audio_policy.msm7x30 \
 	audio.primary.msm7x30 \
 	audio.r_submix.default \
 	audio.usb.default \
@@ -104,6 +98,10 @@ PRODUCT_PACKAGES += \
 	lvm \
 	lvm.conf
 
+# Common apps
+PRODUCT_PACKAGES += \
+	Torch
+
 # Recovery init script
 PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/recovery/init.recovery.qcom.rc:root/init.recovery.qcom.rc
@@ -123,9 +121,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	persist.sys.strictmode.visual=0 \
 	persist.sys.strictmode.disable=1 \
 	ro.sys.fw.bg_apps_limit=16 \
-	ro.config.max_starting_bg=8 \
-	config.disable_atlas=true \
-	persist.sys.isUsbOtgEnabled=1
+	ro.config.max_starting_bg=8
 
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
