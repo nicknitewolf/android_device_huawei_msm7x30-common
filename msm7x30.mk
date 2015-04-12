@@ -137,5 +137,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	debug.mdpcomp.idletime=-1 \
 	persist.sys.force_highendgfx=true
 
+# Recovery
+PRODUCT_PROPERTY_OVERRIDES += \
+	ro.cwm.forbid_format=/boot,/recovery,/cust
+
 # Include proprietary stuff
 $(call inherit-product, vendor/huawei/msm7x30-common/msm7x30-common-vendor.mk)
