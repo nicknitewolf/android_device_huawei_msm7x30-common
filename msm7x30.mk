@@ -22,7 +22,7 @@ $(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
 
 DEVICE_PACKAGE_OVERLAYS += device/huawei/msm7x30-common/overlay
 
-PRODUCT_AAPT_CONFIG := normal hdpi
+PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := hdpi
 
 PRODUCT_BOOT_JARS += qcmediaplayer
