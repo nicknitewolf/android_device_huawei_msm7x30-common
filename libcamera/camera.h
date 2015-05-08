@@ -3,7 +3,7 @@
 
 #include <qexif.h>
 #include <stdint.h>
-#include <media/msm_camera.h>
+#include <linux/msm_camera_huawei.h>
 #include <pthread.h>
 #include <linux/videodev2.h>
 #include <sys/mman.h>
