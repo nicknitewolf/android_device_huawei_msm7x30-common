@@ -27,10 +27,6 @@ on fs
     exec /sbin/static/busybox sh /init.fs.sh
 
 on boot
-    # Set brightness for LCD and buttons
-    write /sys/class/leds/lcd-backlight/brightness 127
-    write /sys/class/leds/button-backlight/brightness 127
-
     # Add mountpoint for cust partition
     mkdir /cust
 

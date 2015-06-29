@@ -22,6 +22,9 @@ $(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
 
 DEVICE_PACKAGE_OVERLAYS += device/huawei/msm7x30-common/overlay
 
+PRODUCT_AAPT_CONFIG := normal
+PRODUCT_AAPT_PREF_CONFIG := hdpi
+
 PRODUCT_BOOT_JARS += qcmediaplayer
 
 # Common hardware-specific features
@@ -128,6 +131,12 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	config.disable_atlas=true \
 	persist.sys.isUsbOtgEnabled=1
 
+# ART
+PRODUCT_PROPERTY_OVERRIDES += \
+	dalvik.vm.dex2oat-filter=balanced \
+	dalvik.vm.dex2oat-flags=--no-watch-dog \
+	dalvik.vm.image-dex2oat-filter=speed
+
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
 	audio.offload.disable=1 \
@@ -136,8 +145,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Graphics properties
 PRODUCT_PROPERTY_OVERRIDES += \
 	debug.sf.hw=1 \
-	debug.composition.type=dyn \
-	persist.hwc.mdpcomp.enable=false \
+	debug.composition.type=mdp \
+	persist.hwc.mdpcomp.enable=true \
 	debug.mdpcomp.maxlayer=3 \
 	debug.mdpcomp.idletime=-1 \
 	persist.sys.force_highendgfx=true
