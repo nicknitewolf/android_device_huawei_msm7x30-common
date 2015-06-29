@@ -119,6 +119,10 @@ on boot
     write /sys/block/mmcblk0/queue/add_random 0
     write /sys/block/mmcblk1/queue/add_random 0
 
+    # Read ahead buffer
+    write /sys/block/mmcblk0/queue/read_ahead_kb 512
+    write /sys/block/mmcblk1/queue/read_ahead_kb 512
+
     # Huawei Settings
     chown system system /sys/devices/platform/msm_otg/mode
     chown system system /sys/devices/platform/msm_otg/manual_chg
