@@ -126,7 +126,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
 	audio.offload.disable=1 \
-	persist.sys.media.use-awesome=true
+	persist.sys.media.use-awesome=true \
+	lpa.decode=true
 
 # Graphics properties
 PRODUCT_PROPERTY_OVERRIDES += \
