@@ -129,6 +129,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	config.disable_atlas=true \
 	persist.sys.isUsbOtgEnabled=1
 
+# IO Scheduler
+PRODUCT_PROPERTY_OVERRIDES += \
+	sys.io.scheduler=bfq
+
 # ART
 PRODUCT_PROPERTY_OVERRIDES += \
 	dalvik.vm.dex2oat-filter=balanced \
