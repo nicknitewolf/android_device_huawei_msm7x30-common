@@ -138,6 +138,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	debug.mdpcomp.idletime=-1 \
 	persist.sys.force_highendgfx=true
 
+# IO Scheduler
+PRODUCT_PROPERTY_OVERRIDES += \
+	sys.io.scheduler=bfq
+
 # Recovery
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.cwm.forbid_format=/boot,/recovery,/cust
