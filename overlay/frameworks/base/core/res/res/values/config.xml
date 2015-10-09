@@ -97,7 +97,4 @@
     <integer name="config_deviceHardwareWakeKeys">64</integer>
 
     <bool name="config_deviceHasVariableButtonBrightness">true</bool>
-
-    <!-- Is the device LTE capable -->
-    <bool name="config_lte_capable">false</bool>
 </resources>
