@@ -56,6 +56,9 @@ PRODUCT_PACKAGES += \
 	libqservice \
 	libtilerenderer
 
+PRODUCT_PACKAGES += \
+	libboringssl-compat
+
 # OMX libraries
 PRODUCT_PACKAGES += \
 	libstagefrighthw \
