@@ -57,7 +57,8 @@ PRODUCT_PACKAGES += \
 	libtilerenderer
 
 PRODUCT_PACKAGES += \
-	libboringssl-compat
+	libboringssl-compat \
+	libstlport
 
 # OMX libraries
 PRODUCT_PACKAGES += \
