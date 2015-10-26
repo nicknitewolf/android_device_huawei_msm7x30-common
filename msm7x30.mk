@@ -113,10 +113,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/recovery/init.recovery.qcom.rc:root/init.recovery.qcom.rc
 
-# Low Power Audio
-PRODUCT_PROPERTY_OVERRIDES += \
-	lpa.decode=true
-
 # Common default properties
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 	persist.sys.usb.config=mtp
@@ -148,8 +144,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
-	audio.offload.disable=1 \
-	persist.sys.media.use-awesome=true
+	audio.offload.disable=1
 
 # Graphics properties
 PRODUCT_PROPERTY_OVERRIDES += \
