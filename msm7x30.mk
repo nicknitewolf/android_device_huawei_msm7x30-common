@@ -25,8 +25,6 @@ DEVICE_PACKAGE_OVERLAYS += device/huawei/msm7x30-common/overlay
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := hdpi
 
-PRODUCT_BOOT_JARS += qcmediaplayer
-
 # Common hardware-specific features
 PRODUCT_COPY_FILES += \
 	frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml \
@@ -70,8 +68,7 @@ PRODUCT_PACKAGES += \
 # Audio libraries
 PRODUCT_PACKAGES += \
 	libaudio-resampler \
-	libaudioutils \
-	libdashplayer
+	libaudioutils
 
 # HAL
 PRODUCT_PACKAGES += \
@@ -103,7 +100,6 @@ PRODUCT_PACKAGES += \
 	audio_policy.conf \
 	media_codecs.xml \
 	media_profiles.xml \
-	qcmediaplayer \
 	wpa_supplicant \
 	wpa_supplicant.conf \
 	wpa_supplicant_overlay.conf \
