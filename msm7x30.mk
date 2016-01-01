@@ -130,8 +130,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	persist.sys.strictmode.disable=1 \
 	ro.sys.fw.bg_apps_limit=16 \
 	ro.config.max_starting_bg=8 \
-	config.disable_atlas=true \
-	persist.sys.isUsbOtgEnabled=1
+	config.disable_atlas=true
 
 # IO Scheduler
 PRODUCT_PROPERTY_OVERRIDES += \
