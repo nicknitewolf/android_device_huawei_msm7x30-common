@@ -1086,6 +1086,7 @@ QualcommCameraHardware::QualcommCameraHardware()
        mRawMapped[i] = NULL;
        mJpegMapped[i] = NULL;
        mThumbnailMapped[i] = 0;
+       mThumbnailBuffer[i] = NULL;
     }
     mRawSnapshotMapped = NULL;
     mJpegCopyMapped = NULL;
