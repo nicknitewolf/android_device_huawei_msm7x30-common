@@ -513,7 +513,8 @@ processCommandBuffer(void *buffer, size_t buflen, RIL_SOCKET_ID socket_id) {
         return 0;
     }
 
-    if (request < 1 || request >= (int32_t)NUM_ELEMS(s_commands)) {
+    if (request < 1 || request >= (int32_t)NUM_ELEMS(s_commands) ||
+        s_commands[request].requestNumber == 0) {
         Parcel pErr;
         RLOGE("unsupported request code %d token %d", request, token);
         // FIXME this should perhaps return a response
@@ -4782,6 +4783,15 @@ void RIL_onUnsolicitedResponse(int unsolResponse, const void *data,
         RLOGE("unsupported unsolicited response code %d", unsolResponse);
         return;
     }
+
+    if (s_unsolResponses[unsolResponseIndex].requestNumber == 0) {
+        RLOGD("stubbing unsolicited response code %d", unsolResponse);
+        return;
+    }
+
+    // Make sure unsolResponse is what is described in the table as the response
+    // numbers differ between RIL versions.
+    unsolResponse = s_unsolResponses[unsolResponseIndex].requestNumber;
 
     // Grab a wake lock if needed for this reponse,
     // as we exit we'll either release it immediately
