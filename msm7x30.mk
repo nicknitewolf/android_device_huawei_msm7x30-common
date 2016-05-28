@@ -122,7 +122,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	persist.sys.strictmode.disable=1 \
 	ro.sys.fw.bg_apps_limit=16 \
 	ro.config.max_starting_bg=8 \
-	config.disable_atlas=true
+	config.disable_atlas=true \
+	ro.vold.primary_physical=1
 
 # IO Scheduler
 PRODUCT_PROPERTY_OVERRIDES += \
