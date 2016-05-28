@@ -914,7 +914,7 @@ void *QualcommCameraHardware::openCamera() {
 
     if (!libmmcamera) {
         ALOGE("FATAL ERROR: could not dlopen liboemcamera.so: %s", dlerror());
-        return false;
+        return (void*)false;
     }
 
     *(void **)&LINK_mm_camera_init =
@@ -929,14 +929,14 @@ void *QualcommCameraHardware::openCamera() {
 
     if (MM_CAMERA_SUCCESS != LINK_mm_camera_init(&mCfgControl, &mCamNotify, &mCamOps, 0)) {
         ALOGE("startCamera: mm_camera_init failed:");
-        return false;
+        return (void*)false;
     }
 
     uint8_t camera_id8 = (uint8_t)HAL_currentCameraId;
     if (MM_CAMERA_SUCCESS != mCfgControl.mm_camera_set_parm(CAMERA_PARM_CAMERA_ID, &camera_id8)) {
         ALOGE("setting camera id failed");
         LINK_mm_camera_deinit();
-        return false;
+        return (void*)false;
     }
 
     //camera_mode_t mode = (camera_mode_t)HAL_currentCameraMode;
@@ -944,12 +944,12 @@ void *QualcommCameraHardware::openCamera() {
     if (MM_CAMERA_SUCCESS != mCfgControl.mm_camera_set_parm(CAMERA_PARM_MODE, &mode)) {
         ALOGE("startCamera: CAMERA_PARM_MODE failed:");
         LINK_mm_camera_deinit();
-        return false;
+        return (void*)false;
     }
 
     if (MM_CAMERA_SUCCESS != LINK_mm_camera_exec()) {
         ALOGE("startCamera: mm_camera_exec failed:");
-        return false;
+        return (void*)false;
     }
     mCameraOpen = true;
     ALOGV(" openCamera : X");
@@ -961,7 +961,7 @@ void *QualcommCameraHardware::openCamera() {
                 (void *)&snapshotFrame)){
             ALOGE("%s: get 3D format failed", __func__);
             LINK_mm_camera_deinit();
-            return false;
+            return (void*)false;
         }
         mSnapshot3DFormat = snapshotFrame.format;
         ALOGI("%s: 3d format  snapshot %d", __func__, mSnapshot3DFormat);
@@ -1943,10 +1943,8 @@ rat_t getRational(uint32_t num, uint32_t denom)
 }
 
 void QualcommCameraHardware::initExifData(){
-    if(mExifValues.dateTime) {
-        addExifTag(EXIFTAGID_EXIF_DATE_TIME_ORIGINAL, EXIF_ASCII,
-                  20, 1, (void *)mExifValues.dateTime);
-    }
+    addExifTag(EXIFTAGID_EXIF_DATE_TIME_ORIGINAL, EXIF_ASCII,
+        20, 1, (void *)mExifValues.dateTime);
     addExifTag(EXIFTAGID_FOCAL_LENGTH, EXIF_RATIONAL, 1, 1, (void *)&(mExifValues.focalLength));
     addExifTag(EXIFTAGID_FLASH,EXIF_SHORT,1,1,(void *)&(mExifValues.flashMode));
     addExifTag(EXIFTAGID_ISO_SPEED_RATING,EXIF_SHORT,1,1,(void *)&(mExifValues.isoSpeed));
@@ -1962,19 +1960,15 @@ void QualcommCameraHardware::initExifData(){
     if(mExifValues.mLatitude) {
         addExifTag(EXIFTAGID_GPS_LATITUDE, EXIF_RATIONAL, 3, 1, (void *)mExifValues.latitude);
 
-        if(mExifValues.latRef) {
-            addExifTag(EXIFTAGID_GPS_LATITUDE_REF, EXIF_ASCII, 2,
-                                    1, (void *)mExifValues.latRef);
-        }
+        addExifTag(EXIFTAGID_GPS_LATITUDE_REF, EXIF_ASCII, 2,
+            1, (void *)mExifValues.latRef);
     }
 
     if(mExifValues.mLongitude) {
         addExifTag(EXIFTAGID_GPS_LONGITUDE, EXIF_RATIONAL, 3, 1, (void *)mExifValues.longitude);
 
-        if(mExifValues.lonRef) {
-            addExifTag(EXIFTAGID_GPS_LONGITUDE_REF, EXIF_ASCII, 2,
-                                1, (void *)mExifValues.lonRef);
-        }
+        addExifTag(EXIFTAGID_GPS_LONGITUDE_REF, EXIF_ASCII, 2,
+            1, (void *)mExifValues.lonRef);
     }
 
     if(mExifValues.mAltitude) {
@@ -5872,10 +5866,7 @@ bool QualcommCameraHardware::recordingEnabled()
 
 void QualcommCameraHardware::notifyShutter(bool mPlayShutterSoundOnly)
 {
-    private_handle_t *thumbnailHandle;
-    if(mThumbnailBuffer) {
-        thumbnailHandle = (private_handle_t *) (*mThumbnailBuffer);
-    }
+    private_handle_t *thumbnailHandle = (private_handle_t *)(*mThumbnailBuffer);
     mShutterLock.lock();
 
     if(mPlayShutterSoundOnly) {
