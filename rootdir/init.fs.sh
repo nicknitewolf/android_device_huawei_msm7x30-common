@@ -1,6 +1,11 @@
 #!/sbin/static/busybox sh
 export PATH=/sbin/static:/sbin
 
+# Scan for LVM physical volumes and set up volume groups
+/sbin/lvm vgscan --mknodes --ignorelockingfailure
+# Activate LVM logical volumes in found volume groups
+/sbin/lvm vgchange -aly --ignorelockingfailure
+
 busybox mkdir /dev/partitions
 
 if [ -d /dev/lvpool ]

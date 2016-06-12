@@ -19,10 +19,8 @@ on init
     write /sys/module/msm_fb/parameters/align_buffer 0
 
 on fs
-    # Scan for LVM physical volumes and set up volume groups
-    exec /sbin/lvm vgscan --mknodes --ignorelockingfailure
-    # Activate LVM logical volumes in found volume groups
-    exec /sbin/lvm vgchange -aly --ignorelockingfailure
+    # Wait for the last partition
+    wait /dev/block/mmcblk0p14
     # Set up partitions
     exec /sbin/static/busybox sh /init.fs.sh
 
