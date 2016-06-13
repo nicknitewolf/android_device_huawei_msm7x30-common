@@ -1,6 +1,7 @@
 # Copyright 2006 The Android Open Source Project
 
-ifneq ($(BOARD_PROVIDES_LIBRIL),true)
+ifeq ($(BOARD_PROVIDES_LIBRIL),true)
+ifeq ($(BOARD_HUAWEI_RIL_VERSION),4)
 
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
@@ -59,4 +60,5 @@ LOCAL_MODULE:= libril_static
 
 include $(BUILD_STATIC_LIBRARY)
 endif # ANDROID_BIONIC_TRANSITION
+endif # BOARD_HUAWEI_RIL_VERSION
 endif # BOARD_PROVIDES_LIBRIL
