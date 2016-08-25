@@ -33,9 +33,7 @@ on early-init
     chown system system /sys/kernel/debug/kgsl/proc
 
 on init
-    # Support legacy paths
-    symlink /storage/sdcard0 /sdcard
-    symlink /storage/sdcard0 /mnt/sdcard
+    symlink /sdcard /storage/sdcard0
 
     # Preload the BoringSSL compat symbols wrapper
     export LD_PRELOAD "/system/lib/libboringssl-compat.so"
