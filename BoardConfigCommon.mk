@@ -89,3 +89,6 @@ TARGET_DISABLE_ARM_PIE := true
 TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
 MALLOC_SVELTE := true
 TARGET_CONTINUOUS_SPLASH_ENABLED := true
+
+# inherit from the proprietary version
+-include vendor/huawei/msm7x30-common/BoardConfigVendor.mk
