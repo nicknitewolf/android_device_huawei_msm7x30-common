@@ -53,7 +53,7 @@ extern "C" {
 #define FLASH_SNAP 32
 
 #define FLOOR16(X) ((X) & 0xFFF0)
-#if DLOPEN_LIBMMCAMERA
+#ifdef DLOPEN_LIBMMCAMERA
 #include <dlfcn.h>
 
 
@@ -1734,7 +1734,7 @@ bool QualcommCameraHardware::startCamera()
         ALOGE(" Unable to determine the target type. Camera will not work ");
         return false;
     }
-#if DLOPEN_LIBMMCAMERA
+#ifdef DLOPEN_LIBMMCAMERA
 
     ALOGV("loading liboemcamera at %p", libmmcamera);
     if (!libmmcamera) {
@@ -2962,7 +2962,8 @@ static int parse_size(const char *str, int &width, int &height)
 
     return 0;
 }
-QualcommCameraHardware* hardware;
+
+static QualcommCameraHardware* qhardware;
 
 int QualcommCameraHardware::allocate_ion_memory(int *main_ion_fd, struct ion_allocation_data* alloc,
      struct ion_fd_data* ion_info_fd, int ion_type, int size, int *memfd)
@@ -3405,19 +3406,19 @@ bool QualcommCameraHardware::createSnapshotMemory (int numberOfRawBuffers, int n
         // Create Raw memory for snapshot
         for(int cnt = 0; cnt < numberOfRawBuffers; cnt++)
         {
-        #ifdef USE_ION
+#ifdef USE_ION
             if (allocate_ion_memory(&raw_main_ion_fd[cnt], &raw_alloc[cnt], &raw_ion_info_fd[cnt],
                                     ion_heap, mJpegMaxSize, &mRawfd[cnt]) < 0){
               ALOGE("do_mmap: Open device %s failed!\n",pmem_region);
               return NULL;
             }
-        #else
+#else
             mRawfd[cnt] = open(pmem_region, O_RDWR|O_SYNC);
             if (mRawfd[cnt] <= 0) {
                 ALOGE("%s: Open device %s failed!\n",__func__, pmem_region);
                     return false;
             }
-        #endif
+#endif
             ALOGE("%s  Raw memory index: %d , fd is %d ", __func__, cnt, mRawfd[cnt]);
             mRawMapped[cnt]=mGetMemory(mRawfd[cnt], mJpegMaxSize,1,mCallbackCookie);
             if(mRawMapped[cnt] == NULL) {
@@ -5297,7 +5298,7 @@ QualcommCameraHardware* QualcommCameraHardware::createInstance()
     }
 
     QualcommCameraHardware *cam = new QualcommCameraHardware();
-    hardware=cam;
+    qhardware = cam;
 
 
     ALOGI("createInstance: created hardware=%p", cam);
@@ -5314,8 +5315,8 @@ QualcommCameraHardware* QualcommCameraHardware::createInstance()
 // For internal use only, hence the strong pointer to the derived type.
 QualcommCameraHardware* QualcommCameraHardware::getInstance()
 {
-    if (hardware != 0) {
-	  return hardware;
+    if (qhardware != 0) {
+	  return qhardware;
     } else {
         ALOGV("getInstance: X new instance of hardware");
         return new QualcommCameraHardware();
@@ -7591,7 +7592,7 @@ status_t QualcommCameraHardware::setPictureFormat(const QCameraParameters& param
 QualcommCameraHardware::MMCameraDL::MMCameraDL(){
     ALOGV("MMCameraDL: E");
     libmmcamera = NULL;
-#if DLOPEN_LIBMMCAMERA
+#ifdef DLOPEN_LIBMMCAMERA
     libmmcamera = ::dlopen("liboemcamera.so", RTLD_NOW);
 #endif
     ALOGV("Open MM camera DL libeomcamera loaded at %p ", libmmcamera);
@@ -7846,7 +7847,7 @@ void QualcommCameraHardware::getCameraInfo()
     ALOGI("getCameraInfo: IN");
     mm_camera_status_t status;
 
-#if DLOPEN_LIBMMCAMERA
+#ifdef DLOPEN_LIBMMCAMERA
     void *libhandle = ::dlopen("liboemcamera.so", RTLD_NOW);
     ALOGI("getCameraInfo: loading libqcamera at %p", libhandle);
     if (!libhandle) {
@@ -7872,7 +7873,7 @@ void QualcommCameraHardware::getCameraInfo()
         ALOGI("sensor_mount_angle: %d", HAL_cameraInfo[i].sensor_mount_angle);
     }
 
-#if DLOPEN_LIBMMCAMERA
+#ifdef DLOPEN_LIBMMCAMERA
     if (libhandle) {
         ::dlclose(libhandle);
         ALOGV("getCameraInfo: dlclose(libqcamera)");
