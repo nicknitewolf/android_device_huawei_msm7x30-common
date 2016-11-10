@@ -17,8 +17,7 @@
 
 package org.cyanogenmod.hardware;
 
-import java.io.File;
-import org.cyanogenmod.hardware.util.FileUtils;
+import org.cyanogenmod.internal.util.FileUtils;
 
 /*
  * Vibrator intensity adjustment
@@ -46,8 +45,7 @@ public class VibratorHW {
      */
 
     public static boolean isSupported() {
-        File f = new File(V_PATH);
-        return f.exists();
+        return FileUtils.isFileWritable(V_PATH);
     }
 
     /*
