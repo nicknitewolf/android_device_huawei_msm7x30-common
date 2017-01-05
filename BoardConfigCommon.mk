@@ -63,9 +63,6 @@ BOARD_KERNEL_PAGESIZE := 4096
 BOARD_CHARGER_DISABLE_INIT_BLANK := true
 BOARD_CHARGER_ENABLE_SUSPEND := true
 
-# Don't generate block mode update zips
-BLOCK_BASED_OTA := false
-
 # Recovery
 TARGET_RECOVERY_FSTAB := device/huawei/msm7x30-common/rootdir/fstab.qcom
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
