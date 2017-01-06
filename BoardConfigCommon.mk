@@ -58,6 +58,12 @@ TARGET_KERNEL_SOURCE := kernel/huawei/msm7x30
 BOARD_KERNEL_CMDLINE := androidboot.hardware=qcom androidboot.selinux=permissive
 BOARD_KERNEL_BASE := 0x00200000
 BOARD_KERNEL_PAGESIZE := 4096
+ifeq ($(HOST_OS),linux)
+  KERNEL_TOOLCHAIN := $(ANDROID_BUILD_TOP)/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin
+else
+  KERNEL_TOOLCHAIN := $(ANDROID_BUILD_TOP)/prebuilts/gcc/darwin-x86/arm/arm-eabi-4.8/bin
+endif
+TARGET_KERNEL_CROSS_COMPILE_PREFIX := arm-eabi-
 
 # Charger
 BOARD_CHARGER_DISABLE_INIT_BLANK := true
