@@ -92,7 +92,6 @@ PRODUCT_PACKAGES += \
 	hostapd \
 	hwprops \
 	fstab.qcom \
-	fstab.qcom.lvm \
 	init.fs.sh \
 	init.qcom.rc \
 	init.qcom.usb.rc \
@@ -122,8 +121,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	persist.sys.strictmode.disable=1 \
 	ro.sys.fw.bg_apps_limit=16 \
 	ro.config.max_starting_bg=8 \
-	config.disable_atlas=true \
-	ro.vold.primary_physical=1
+	config.disable_atlas=true
 
 # IO Scheduler
 PRODUCT_PROPERTY_OVERRIDES += \

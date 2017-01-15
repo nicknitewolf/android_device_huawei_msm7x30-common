@@ -8,7 +8,6 @@
 /dev/partitions/userdata                                /data           ext4    noatime,nosuid,nodev,barrier=1,data=ordered,noauto_da_alloc,journal_async_commit,errors=panic   wait,check,encryptable=footer,length=-16384
 /dev/partitions/userdata                                /data           f2fs    rw,discard,nosuid,nodev,noatime,nodiratime,inline_xattr                                         wait,check
 
-/devices/platform/msm_sdcc.2/mmc_host/mmc0*             auto            vfat    defaults                        voldmanaged=sdcard0:14,nonremovable,noemulatedsd
 /devices/platform/msm_sdcc.4/mmc_host/mmc2*             auto            auto    defaults                        voldmanaged=sdcard1:auto,encryptable=userdata
 /devices/platform/msm_hsusb_host.0*                     auto            auto    defaults                        voldmanaged=usb:auto
 
