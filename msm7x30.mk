@@ -119,7 +119,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	ro.hwro=1 \
 	persist.sys.strictmode.visual=0 \
 	persist.sys.strictmode.disable=1 \
-	ro.sys.fw.bg_apps_limit=16 \
+	ro.sys.fw.bg_apps_limit=8 \
 	ro.config.max_starting_bg=8 \
 	config.disable_atlas=true
 
