@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+TARGET_SPECIFIC_HEADER_PATH := device/huawei/msm7x30-common/include
+
 TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a-neon
 TARGET_CPU_VARIANT := scorpion
@@ -92,7 +94,7 @@ TARGET_USES_ION := true
 TARGET_USE_CUSTOM_LUN_FILE_PATH := /sys/devices/platform/msm_hsusb/gadget/lun%d/file
 TARGET_RELEASETOOLS_EXTENSIONS := device/huawei/msm7x30-common
 TARGET_RELEASETOOL_MAKE_RECOVERY_PATCH_SCRIPT := device/huawei/msm7x30-common/make_recovery_patch
-TARGET_NEEDS_NON_PIE_SUPPORT := true
+LINKER_NON_PIE_EXECUTABLES_HEADER_DIR := $(TARGET_SPECIFIC_HEADER_PATH)
 TARGET_DISABLE_ARM_PIE := true
 TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
 MALLOC_SVELTE := true
