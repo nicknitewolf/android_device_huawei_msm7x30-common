@@ -121,12 +121,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
 	sys.io.scheduler=bfq
 
-# ART
-PRODUCT_PROPERTY_OVERRIDES += \
-	dalvik.vm.dex2oat-filter=balanced \
-	dalvik.vm.dex2oat-swap=false \
-	dalvik.vm.image-dex2oat-filter=speed
-
 # Audio properties
 PRODUCT_PROPERTY_OVERRIDES += \
 	audio.offload.disable=1
