@@ -99,5 +99,14 @@ TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
 MALLOC_SVELTE := true
 TARGET_CONTINUOUS_SPLASH_ENABLED := true
 
+# Enable dex pre-optimization
+ifeq ($(HOST_OS),linux)
+    ifeq ($(WITH_DEXPREOPT),)
+        WITH_DEXPREOPT := true
+        WITH_DEXPREOPT_COMP := false
+        WITH_DEXPREOPT_PIC := true
+    endif
+endif
+
 # inherit from the proprietary version
 -include vendor/huawei/msm7x30-common/BoardConfigVendor.mk
