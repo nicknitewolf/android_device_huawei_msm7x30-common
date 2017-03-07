@@ -104,10 +104,6 @@ PRODUCT_PACKAGES += \
 	lvm \
 	lvm.conf
 
-# Recovery init script
-PRODUCT_COPY_FILES += \
-	$(LOCAL_PATH)/recovery/init.recovery.qcom.rc:root/init.recovery.qcom.rc
-
 # Common properties
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.sf.lcd_density=240 \

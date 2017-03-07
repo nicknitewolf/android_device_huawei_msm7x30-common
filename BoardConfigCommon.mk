@@ -74,6 +74,7 @@ BOARD_CHARGER_ENABLE_SUSPEND := true
 # Recovery
 TARGET_RECOVERY_FSTAB := device/huawei/msm7x30-common/rootdir/fstab.qcom
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
+TARGET_RECOVERY_DEVICE_DIRS := device/huawei/msm7x30-common
 
 # Filesystem
 # 12MiB
