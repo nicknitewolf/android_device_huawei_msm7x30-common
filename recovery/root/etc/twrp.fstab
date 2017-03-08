@@ -1,0 +1,8 @@
+# TWRP fstab file.
+
+#<mnt_point>	<type>		<src>						<flags>
+/cust		vfat		/dev/block/platform/msm_sdcc.2/by-num/p1	flags=backup=y;
+/system		ext4		/dev/lvpool/system
+/cache		ext4		/dev/lvpool/cache
+/data		ext4		/dev/lvpool/userdata				length=-16384
+/external_sd	vfat		/dev/block/platform/msm_sdcc.4/by-num/p1	flags=display="Micro SDcard";storage;wipeingui;removable
