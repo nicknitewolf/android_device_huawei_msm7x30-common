@@ -1,20 +1,21 @@
 # Android fstab file.
-#<src>                                                  <mnt_point>     <type>  <mnt_flags and options>         <fs_mgr_flags>
 # The filesystem that contains the filesystem checker binary (typically /system) cannot
 # specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
 
-/dev/lvpool/system                                      /system         ext4    ro,barrier=1                    wait
-/dev/lvpool/cache                                       /cache          ext4    noatime,nosuid,nodev,barrier=1,data=ordered,noauto_da_alloc,journal_async_commit,errors=panic   wait,check
-/dev/lvpool/userdata                                    /data           ext4    noatime,nosuid,nodev,barrier=1,data=ordered,noauto_da_alloc,journal_async_commit,errors=panic   wait,check,encryptable=footer,length=-16384
-/dev/lvpool/userdata                                    /data           f2fs    rw,discard,nosuid,nodev,noatime,nodiratime,inline_xattr                                         wait,check
-/dev/lvpool/misc                                        /misc           emmc    defaults                        defaults
+#<src>                                       <mnt_point>  <type>  <mnt_flags and options>                                     <fs_mgr_flags>
+/dev/lvpool/system                           /system      ext4    ro,barrier=1                                                wait
+/dev/lvpool/userdata                         /data        f2fs    nosuid,nodev,noatime,inline_xattr,data_flush                wait,check,formattable,encryptable=footer
+/dev/lvpool/userdata                         /data        ext4    noatime,nosuid,nodev,barrier=1,noauto_da_alloc              wait,check,formattable,encryptable=footer
+/dev/lvpool/cache                            /cache       f2fs    nosuid,nodev,noatime,inline_xattr,flush_merge,data_flush    wait,check,formattable
+/dev/lvpool/cache                            /cache       ext4    noatime,nosuid,nodev,barrier=1,noauto_da_alloc              wait,check,formattable
+/dev/lvpool/misc                             /misc        emmc    defaults                                                    defaults
+/dev/block/platform/msm_sdcc.2/by-num/p1     /cust        vfat    ro                                                          defaults
 
-/devices/platform/msm_sdcc.4/mmc_host/mmc2*             auto            auto    defaults                        voldmanaged=sdcard1:auto,encryptable=userdata
-/devices/platform/msm_hsusb_host.0*                     auto            auto    defaults                        voldmanaged=usb:auto
+/dev/null                                    /boot        emmc    defaults                                                    recoveryonly
+/dev/null                                    /recovery    emmc    defaults                                                    recoveryonly
 
-/dev/block/platform/msm_sdcc.2/by-num/p1                /cust           vfat    ro                              defaults
-/dev/block/platform/msm_sdcc.2/by-num/p1                /boot           vfat    defaults                        recoveryonly
-/dev/null                                               /recovery       emmc    defaults                        recoveryonly
+/devices/platform/msm_sdcc.4/mmc_host/mmc2*  auto         auto    defaults                                                    voldmanaged=sdcard1:auto,encryptable=userdata
+/devices/platform/msm_hsusb_host.0*          auto         auto    defaults                                                    voldmanaged=usb:auto
 
 # zRAM
-/dev/block/zram0                                        none            swap    defaults                        zramsize=67108864
+/dev/block/zram0                             none         swap    defaults                                                    zramsize=67108864
