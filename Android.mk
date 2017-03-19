@@ -16,4 +16,8 @@
 
 LOCAL_PATH := $(call my-dir)
 
+ifneq ($(filter u8800 u8800pro u8860,$(TARGET_DEVICE)),)
+
 include $(call first-makefiles-under,$(call my-dir))
+
+endif
