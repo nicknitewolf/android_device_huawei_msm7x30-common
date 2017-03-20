@@ -39,8 +39,9 @@ write_headers "u8800 u8800pro u8860"
 # The standard common blobs
 write_makefiles "$MY_DIR"/proprietary-files.txt
 
-cat << EOF >> "$ANDROIDMK"
-
+cat << EOF >> "$PRODUCTMK"
+PRODUCT_COPY_FILES += \\
+    vendor/huawei/msm7x30-common/proprietary/sbin/rmt_storage:recovery/root/sbin/rmt_storage
 EOF
 
 # We are done!
