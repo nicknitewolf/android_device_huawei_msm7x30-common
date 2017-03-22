@@ -21,8 +21,8 @@ on init
 on fs
     # Wait for the last partition
     wait /dev/block/mmcblk0p14
-    start lvm_vgscan
-    start lvm_vgchange
+    exec /sbin/lvm vgscan --mknodes --ignorelockingfailure
+    exec /sbin/lvm vgchange -aly --ignorelockingfailure
 
 on boot
     # Add mountpoint for cust partition
@@ -38,14 +38,3 @@ service charger /sbin/healthd -c
 on charger
     start rmt_storage
     class_start charger
-
-# LVM services
-# Scan for LVM physical volumes and set up volume groups
-service lvm_vgscan /sbin/lvm vgscan --mknodes --ignorelockingfailure
-    disabled
-    oneshot
-
-# Activate LVM logical volumes in found volume groups
-service lvm_vgchange /sbin/lvm vgchange -aly --ignorelockingfailure
-    disabled
-    oneshot

@@ -43,8 +43,8 @@ on fs
 
     # Wait for the last partition
     wait /dev/block/mmcblk0p14
-    start lvm_vgscan
-    start lvm_vgchange
+    exec /sbin/lvm vgscan --mknodes --ignorelockingfailure
+    exec /sbin/lvm vgchange -aly --ignorelockingfailure
 
     mkdir /cust
     mount_all ./fstab.qcom
@@ -215,14 +215,3 @@ on property:sys.io.scheduler=cfq
 on property:sys.io.scheduler=bfq
     write /sys/block/mmcblk0/queue/iosched/slice_idle 0
     write /sys/block/mmcblk1/queue/iosched/slice_idle 0
-
-# LVM services
-# Scan for LVM physical volumes and set up volume groups
-service lvm_vgscan /sbin/lvm vgscan --mknodes --ignorelockingfailure
-    disabled
-    oneshot
-
-# Activate LVM logical volumes in found volume groups
-service lvm_vgchange /sbin/lvm vgchange -aly --ignorelockingfailure
-    disabled
-    oneshot
