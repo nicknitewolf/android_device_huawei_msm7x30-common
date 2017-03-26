@@ -24,7 +24,7 @@ def InstallImage(info, mount_point, location, file):
 
 # Function used to copy boot/recovery image to the /cust (/boot) partition.
 def InstallCustImage(info, file):
-	InstallImage(info, "/boot", "/boot/image", file)
+	InstallImage(info, "/cust", "/cust/image", file)
 
 # Function called after flashing the main system is complete.
 def FullOTA_InstallEnd(info):
