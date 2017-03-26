@@ -69,6 +69,9 @@ BOARD_CHARGER_ENABLE_SUSPEND := true
 TARGET_RECOVERY_FSTAB := device/huawei/msm7x30-common/rootdir/fstab.qcom
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 TARGET_RECOVERY_DEVICE_DIRS := device/huawei/msm7x30-common
+
+# TWRP configurations
+RECOVERY_VARIANT := twrp
 TW_HAS_NO_BOOT_PARTITION := true
 TW_HAS_NO_RECOVERY_PARTITION := true
 TW_CUSTOM_BATTERY_PATH := "/sys/class/power_supply/huawei-battery"
