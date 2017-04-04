@@ -18,15 +18,19 @@ on init
     # Disable framebuffer alignment
     write /sys/module/msm_fb/parameters/align_buffer 0
 
+    # Add mountpoint for cust partition
+    mkdir /cust
+
 on fs
     # Wait for the last partition
     wait /dev/block/mmcblk0p14
     exec /sbin/lvm vgscan --mknodes --ignorelockingfailure
     exec /sbin/lvm vgchange -aly --ignorelockingfailure
 
-on boot
-    # Add mountpoint for cust partition
-    mkdir /cust
+    # Mount /cust always to have boot.img and recovery.img fake parts
+    mount vfat /dev/block/platform/msm_sdcc.2/by-num/p1 /cust
+    exec /sbin/losetup /dev/block/loop0 /cust/image/boot.img
+    exec /sbin/losetup /dev/block/loop1 /cust/image/recovery.img
 
 service rmt_storage /sbin/rmt_storage
 
